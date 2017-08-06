@@ -1,0 +1,9 @@
+moog "SILabsLib" do |m|
+	m.repo = "http://repo"
+	m.branch = "master"
+end
+
+moog "SILabsLib123" do |m|
+	m.repo = "http://repo"
+	m.branch = "master"
+end
