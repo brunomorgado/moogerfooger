@@ -1,4 +1,5 @@
 require "spec_helper"
+require "moogerfooger"
 
 RSpec.describe Moogerfooger do
   it "has a version number" do
