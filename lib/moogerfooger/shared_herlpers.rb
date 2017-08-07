@@ -3,26 +3,27 @@ require "pathname"
 module Mooger
   module SharedHelpers
 
-    def root
+    def self.root
       moogerfile = find_moogerfile
       raise MoogerfileNotFound, "Could not locate Moogerfile" unless moogerfile
       Pathname.new(moogerfile).untaint.expand_path.parent
     end
 
-		def default_moogs_dir
-			moogs_dir = find_directory("Moogs")
-			return nil unless moogs_dir
-			moogs_dir = Pathname.new(moogs_dir)
-			moogs_dir
+    def self.default_moogs_dir
+			moogs_dir = find_directory("vendor")
+      if moogs_dir.nil? 
+        moogs_dir = root + "vendor"
+      end
+      return moogs_dir
 		end
 
     def self.default_moogerfile
-      moogerfile = SharedHelpers.find_moogerfile
+      moogerfile = find_moogerfile
 			raise MoogerfileNotFound, "Could not locate Moogerfile" unless moogerfile
 			Pathname.new(moogerfile).untaint.expand_path
 		end
 
-		def filesystem_access(path, action = :write, &block)
+    def self.filesystem_access(path, action = :write, &block)
 			# Use block.call instead of yield because of a bug in Ruby 2.2.2
 			# See https://github.com/bundler/bundler/issues/5341 for details
 			block.call(path.dup.untaint)
@@ -47,8 +48,8 @@ module Mooger
     def self.find_moogerfile()
 			given = ENV["MOOGERFILE_PATH"]
 			return given if given && !given.empty?
-      names = SharedHelpers.moogerfile_names
-      SharedHelpers.find_file(*names)
+      names = moogerfile_names
+      find_file(*names)
 		end
 
     def self.moogerfile_names
@@ -56,12 +57,12 @@ module Mooger
 		end
 
     def self.find_file(*names)
-      SharedHelpers.search_up(*names) do |filename|
+      search_up(*names) do |filename|
 				return filename if File.file?(filename)
 			end
 		end
 
-		def find_directory(*names)
+    def self.find_directory(*names)
 			search_up(*names) do |dirname|
 				return dirname if File.directory?(dirname)
 			end
@@ -69,7 +70,7 @@ module Mooger
 
     def self.search_up(*names)
 			previous = nil
-			current  = File.expand_path(SharedHelpers.pwd).untaint
+			current  = File.expand_path(pwd).untaint
 
 			until !File.directory?(current) || current == previous
 				names.each do |name|

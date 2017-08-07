@@ -1,3 +1,5 @@
+require "moogerfooger/installer/git_subtree"
+
 module Mooger
   class Installer
     class << self
@@ -29,6 +31,8 @@ module Mooger
 
 		def install
       puts "installllllll"
+      subtree_installer = Mooger::Installer::GitSubtree.new(@definition)
+      subtree_installer.generate
 		end
 
 		def create_moogs_path

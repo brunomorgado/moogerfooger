@@ -12,7 +12,7 @@ module Mooger
 		end
 
 		def initialize
-			@moogs = {}
+			@moogs = []
 			@moogerfile = nil
 		end
 
@@ -37,14 +37,14 @@ module Mooger
 				raise InvalidOption, "You need to pass a config block to #moog"
 			end
 
-      unless !@moogs.key?(name)
+      unless !@moogs.any?{|m| m.name == name}
         raise MoogerfileError, "You specified: #{name} multiple times"
       end
 
       moog = Moog.new(name)
 
       yield(moog)
-      @moogs[name.to_s] = moog
+      @moogs << moog
     end
 
     def to_definition(moogerfile)

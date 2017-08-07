@@ -6,7 +6,8 @@ module Mooger
 
     desc "install", "Install the modules according to the Moogerfile specs"
     def install
-      puts "asdasd"
+      require "moogerfooger/cli/install"
+      Install.new(options.dup).run
     end
 
 	end
