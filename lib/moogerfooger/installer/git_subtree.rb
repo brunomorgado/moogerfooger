@@ -12,7 +12,7 @@ module Mooger
         ensure_clean
         @definition.moogs.each do |moog|
           check_if_remote_exists(moog.name)
-          add_remote(moog.name)
+          add_remote(moog.name, moog.repo)
           add_subtree(Mooger.default_moogs_dir.split().last.to_s + moog.name, moog.name, moog.branch)
         end
       end
