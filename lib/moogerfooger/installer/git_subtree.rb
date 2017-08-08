@@ -13,7 +13,7 @@ module Mooger
         @definition.moogs.each do |moog|
           check_if_remote_exists(moog.name)
           system "git remote add -f #{moog.name} #{moog.repo}"
-          system "git subtree add --prefix #{Mooger.default_moogs_dir.split().last.to_s + moog.name} #{moog.name} #{moog.branch} --squash"
+          system "git subtree add --prefix=#{Mooger.default_moogs_dir.split().last.to_s + moog.name} #{moog.name} #{moog.branch} --squash"
         end
       end
 
