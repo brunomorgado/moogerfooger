@@ -8,9 +8,8 @@ module Mooger
     end
 
     def run
-puts @moog
-      unless @moog.exists?
-        puts "Moog with name: #{@moog_name} not foung. Unable to pull."
+      if @moog.nil?
+        puts "Moog with name: #{@moog_name} not found. Unable to pull."
         return
       end
 
