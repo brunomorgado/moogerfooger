@@ -20,4 +20,6 @@ module Mooger
   class MoogerfileError < MoogerError; status_code(4); end
   class InvalidOption < MoogerError; status_code(5); end
   class MoogerfileEvalError < MoogerfileError; end
+  class GitRemoteExistsError < MoogerError; status_code(6); end
+  class GitRepoHasChangesError < MoogerError; status_code(7); end
 end

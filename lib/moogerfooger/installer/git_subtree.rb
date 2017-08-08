@@ -1,3 +1,5 @@
+require "moogerfooger/errors"
+          
 module Mooger
   class Installer
     class GitSubtree
@@ -7,11 +9,34 @@ module Mooger
       end
 
       def generate
-        puts @definition.moogs
+        ensure_clean
         @definition.moogs.each do |moog|
+          check_if_remote_exists(moog.name)
           system "git remote add -f #{moog.name} #{moog.repo}"
-          system "git subtree add --prefix #{Mooger.default_moogs_dir} #{moog.name} #{moog.branch} --squash"
+          system "git subtree add --prefix #{Mooger.default_moogs_dir.to_s + moog.name} #{moog.name} #{moog.branch} --squash"
         end
+      end
+
+      private
+
+      def ensure_clean
+        if repo_has_changes?
+          raise GitRepoHasChangesError, "Working tree has modifications. Cannot continue"
+        end
+      end
+
+      def repo_has_changes?
+        !system "git diff --cached --quiet --exit-code"
+      end
+
+      def check_if_remote_exists(remote_name)
+        if remote_exists?(remote_name)
+          raise GitRemoteExistsError, "There is already a remote called #{remote_name}. Cannot continue."
+        end
+      end
+
+      def remote_exists?(remote_name)
+        system "git config remote.#{remote_name}.url > /dev/null"
       end
     end
   end
