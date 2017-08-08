@@ -14,7 +14,7 @@ module Mooger
       if moogs_dir.nil? 
         moogs_dir = root + "vendor"
       end
-      return moogs_dir
+      return Pathname.new(moogs_dir).untaint.expand_path
 		end
 
     def self.default_moogerfile
