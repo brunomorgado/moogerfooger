@@ -1,6 +1,6 @@
 module Mooger
   class CLI::Pull
-    attr_reader :options
+
     def initialize(options, moog_name)
       @options = options
       @moog_name = moog_name

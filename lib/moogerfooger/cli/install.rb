@@ -2,7 +2,7 @@ require "moogerfooger/installer"
 
 module Mooger
     class CLI::Install
-      attr_reader :options
+
       def initialize(options)
         @options = options
       end
