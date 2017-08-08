@@ -18,19 +18,16 @@ module Mooger
 
     def run(options)
       create_moogs_path
-
       if @definition.moogs.empty?
         #TODO: warn empty moogerfile
         return
       end
-
       install
     end
 
 		private
 
 		def install
-      puts "installllllll"
       subtree_installer = Mooger::Installer::GitSubtree.new(@definition)
       subtree_installer.generate
 		end
