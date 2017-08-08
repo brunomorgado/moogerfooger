@@ -13,7 +13,7 @@ module Mooger
         @definition.moogs.each do |moog|
           check_if_remote_exists(moog.name)
           add_remote(moog.name, moog.repo)
-          add_subtree(Mooger.default_moogs_dir.split().last.to_s + moog.name, moog.name, moog.branch)
+          add_subtree(Mooger.default_moogs_dir.split().last + moog.name, moog.name, moog.branch)
         end
       end
 
@@ -54,8 +54,8 @@ module Mooger
         system "git remote remove #{remote_name}"
       end
 
-      def add_subtree(prefix, remote_name, branch)
-        success = system("git subtree add --prefix=#{prefix} #{remote_name} #{branch} --squash")
+      def add_subtree(path, remote_name, branch)
+        success = system("git subtree add --prefix=#{path.to_s} #{remote_name} #{branch} --squash")
         unless success
           remove_remote(remote_name)
           raise GitSubtreeAddError, "Failed to add subtree to remote with name: #{remote_name}"
