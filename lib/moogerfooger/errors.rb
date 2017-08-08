@@ -22,4 +22,6 @@ module Mooger
   class MoogerfileEvalError < MoogerfileError; end
   class GitRemoteExistsError < MoogerError; status_code(6); end
   class GitRepoHasChangesError < MoogerError; status_code(7); end
+  class GitRemoteAddError < MoogerError; status_code(8); end
+  class GitSubtreeAddError < MoogerError; status_code(9); end
 end
