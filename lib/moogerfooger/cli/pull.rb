@@ -3,7 +3,7 @@ module Mooger
     attr_reader :options
     def initialize(options, moog_name)
       @options = options
-      @moog = Mooger.find(mooger_name)
+      @moog = Mooger.find(moog_name)
     end
 
     def run
