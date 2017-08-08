@@ -20,7 +20,7 @@ module Mooger
 
     def pull_remote(path, remote_name, branch)
       puts "git subtree pull —-prefix=#{path.to_s} #{remote_name} #{branch}"
-      system "git subtree pull —-prefix=#{path.to_s} #{remote_name} #{branch}"
+      system "git subtree pull --prefix=#{path.to_s} #{remote_name} #{branch}"
     end
   end
 end
