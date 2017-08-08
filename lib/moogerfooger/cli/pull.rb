@@ -1,5 +1,3 @@
-require 'moog'
-
 module Mooger
   class CLI::Pull
     attr_reader :options
