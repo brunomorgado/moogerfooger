@@ -12,7 +12,7 @@ module Mooger
     def self.default_moogs_dir
 			moogs_dir = find_directory("vendor")
       if moogs_dir.nil? 
-        moogs_dir = root + "vendor"
+        moogs_dir = root + "vendor/"
       end
       return moogs_dir
 		end

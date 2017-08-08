@@ -26,7 +26,9 @@ module Mooger
       end
 
       def repo_has_changes?
-        !system "git diff --cached --quiet --exit-code"
+        has_staged_changes = !system("git diff --quiet --exit-code")
+        has_unstaged_changes = !system("git diff --cached --quiet --exit-code")
+        has_unstaged_changes || has_staged_changes
       end
 
       def check_if_remote_exists(remote_name)
