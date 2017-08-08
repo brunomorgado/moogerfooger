@@ -55,6 +55,8 @@ module Mooger
       end
 
       def add_subtree(path, remote_name, branch)
+        puts path
+        puts path.to_s
         success = system("git subtree add --prefix=#{path.to_s} #{remote_name} #{branch} --squash")
         unless success
           remove_remote(remote_name)
