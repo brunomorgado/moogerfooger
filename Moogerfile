@@ -2,8 +2,3 @@ moog "SILabsLib" do |m|
 	m.repo = "git@github.com:brunomorgado/RxErrorTracker.git"
 	m.branch = "master"
 end
-
-moog "SILabsLib123" do |m|
-	m.repo = "git@github.com:brunomorgado/RxErrorTracker.git"
-	m.branch = "master"
-end
