@@ -7,6 +7,7 @@ module Mooger
     desc "install [OPTIONS]", "Install the modules according to the Moogerfile specs"
     def install
       require "moogerfooger/cli/install"
+      Install.new(options).run
     end
 
     desc "pull MOOG_NAME", "Pulls the specified module"
