@@ -20,7 +20,7 @@ module Mooger
 			expanded_moogerfile_path = Pathname.new(moogerfile).expand_path(@moogerfile && @moogerfile.parent)
 			original_moogerfile = @moogerfile
 			@moogerfile = expanded_moogerfile_path
-			contents ||= Mooger.read_file(@moogerfile.to_s)
+			contents ||= SharedHelpers.read_file(@moogerfile.to_s)
 			instance_eval(contents.dup.untaint, moogerfile.to_s, 1)
 		rescue Exception => e
 			message = "There was an error " \

@@ -17,9 +17,19 @@ module Mooger
       @tag = nil
     end
 
+    def to_hash
+      hash = Hash.new
+      hash["name"] = @name
+      hash["repo"] = @repo
+      hash["branch"] = @branch
+      hash["tag"] = @tag
+      hash
+    end
+
     def self.find(moog_name)
       definition = Mooger.definition
       definition.moogs.select { |moog| moog.name == moog_name }.first
     end
+
   end
 end

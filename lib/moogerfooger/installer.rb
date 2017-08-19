@@ -17,7 +17,7 @@ module Mooger
     end
 
     def run(options)
-      create_moogs_path
+      create_moogs_dir
       if @definition.moogs.empty?
         #TODO: warn empty moogerfile
         return
@@ -32,13 +32,12 @@ module Mooger
       subtree_installer.generate
 		end
 
-		def create_moogs_path
-			SharedHelpers.filesystem_access(Mooger.moogs_path.to_s) do |p|
-				Mooger.mkdir_p(p)
-			end unless Mooger.moogs_path.exist?
-		rescue Errno::EEXIST
-			raise PathError, "Could not install to path `#{Mooger.moogs_path}` " \
-				"because a file already exists at that path. Either remove or rename the file so the directory can be created."
-		end
-	end
+    def create_moogs_dir
+      return if Mooger.moogs_dir.exist?
+      SharedHelpers.mkdir_p(p)
+    rescue Errno::EEXIST
+      raise PathError, "Could not install to path `#{Mooger.moogs_dir}` " \
+        "because a file already exists at that path. Either remove or rename the file so the directory can be created."
+    end
+  end
 end

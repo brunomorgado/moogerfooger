@@ -13,7 +13,7 @@ module Mooger
         return
       end
 
-      pull_remote(Mooger.default_moogs_dir.split().last + @moog.name, @moog.name, @moog.branch)
+      pull_remote(Mooger.moogs_dir.split().last + @moog.name, @moog.name, @moog.branch)
     end
 
     private

@@ -1,5 +1,10 @@
 require "bundler/setup"
 require "moogerfooger"
+require 'fakefs/safe'
+require 'pp'
+require 'rspec'
+require 'pry'
+require 'byebug'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

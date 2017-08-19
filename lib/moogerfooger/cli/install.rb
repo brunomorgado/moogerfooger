@@ -9,7 +9,7 @@ module Mooger
 
       def run
         definition = Mooger.definition
-        installer = Installer.install(Mooger.root_path, definition, options)
+        installer = Installer.install(Mooger.root, definition, options)
       end
     end
 end

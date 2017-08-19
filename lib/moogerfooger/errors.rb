@@ -16,8 +16,10 @@ module Mooger
     end
   end
 
-  class MoogerfileNotFound < MoogerError; status_code(3); end
-  class MoogerfileError < MoogerError; status_code(4); end
+  class MoogerfileNotFound < MoogerError; status_code(1); end
+  class MoogerfileError < MoogerError; status_code(2); end
+  class LockfileNotFound < MoogerError; status_code(3); end
+  class LockfileError < MoogerError; status_code(4); end
   class InvalidOption < MoogerError; status_code(5); end
   class MoogerfileEvalError < MoogerfileError; end
   class GitRemoteExistsError < MoogerError; status_code(6); end
