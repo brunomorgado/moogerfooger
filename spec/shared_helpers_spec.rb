@@ -20,6 +20,10 @@ RSpec.describe Mooger::SharedHelpers do
       end
     }
 
+    let(:create_moogs_dir) {
+      Dir.mkdir(Mooger::SharedHelpers.moogs_dir_path.to_s)
+    }
+
     describe "#root" do
 
       it "should not be nil if Moogerfile exists" do
@@ -54,7 +58,8 @@ RSpec.describe Mooger::SharedHelpers do
 
       it "should not be nil if moogs_dir exists" do
         FakeFS.with_fresh do
-          Dir.mkdir("Moogs")
+          create_moogerfile
+          create_moogs_dir
           expect(Mooger::SharedHelpers.moogs_dir).not_to be nil
         end
       end
@@ -62,21 +67,23 @@ RSpec.describe Mooger::SharedHelpers do
       it "should create Moogs dir if not present" do
         FakeFS.with_fresh do
           create_moogerfile
-          Dir.mkdir("vendr")
+          create_moogs_dir
           expect(Mooger::SharedHelpers.moogs_dir).not_to be nil
         end
       end
 
       it "moogs_dir should be a directory" do
         FakeFS.with_fresh do
-          Dir.mkdir("Moogs")
+          create_moogerfile
+          create_moogs_dir
           expect(Mooger::SharedHelpers.moogs_dir.directory?).to be true
         end
       end
 
       it "should be a Pathname" do
         FakeFS.with_fresh do
-          Dir.mkdir("Moogs")
+          create_moogerfile
+          create_moogs_dir
           expect(Mooger::SharedHelpers.moogs_dir).to be_a Pathname
         end
       end
@@ -129,6 +136,54 @@ RSpec.describe Mooger::SharedHelpers do
         FakeFS.with_fresh do
           create_lockfile
           expect(Mooger::SharedHelpers.lockfile).to be_a Pathname
+        end
+      end
+    end
+
+    describe "#file_exists" do
+
+      it "should return true if file exists and it is a File" do
+        FakeFS.with_fresh do
+          create_moogerfile
+          create_lockfile
+          expect(Mooger::SharedHelpers.file_exists?(Mooger::SharedHelpers.lockfile_path)).to be true
+        end
+      end
+
+      it "should return false if file exists but it is not a File" do
+        FakeFS.with_fresh do
+          create_moogerfile
+          create_moogs_dir
+          expect(File.exists?(Mooger::SharedHelpers.moogs_dir_path)).to be true
+          expect(Mooger::SharedHelpers.file_exists?(Mooger::SharedHelpers.moogs_dir_path)).to be false
+        end
+      end
+
+      it "should return false if file does not exist" do
+        FakeFS.with_fresh do
+          expect(Mooger::SharedHelpers.file_exists?("some-random-file.txt")).to be false
+        end
+      end
+    end
+
+    describe "#moogs_dir_path" do
+
+      it "should be equal to the root path + /Moogs" do
+        FakeFS.with_fresh do
+          create_moogerfile
+          moogs_dir_path = Mooger::SharedHelpers.root + "Moogs"
+          expect(Mooger::SharedHelpers.moogs_dir_path.to_s).to eq(Pathname.new(moogs_dir_path).untaint.expand_path.to_s)
+        end
+      end
+    end
+
+    describe "#lockfile_path" do
+
+      it "should be in the root with the name: Moogerfile.lock" do
+        FakeFS.with_fresh do
+          create_moogerfile
+          lockfile_path = Mooger::SharedHelpers.root + "Moogerfile.lock"
+          expect(Mooger::SharedHelpers.lockfile_path.to_s).to eq(Pathname.new(lockfile_path).untaint.expand_path.to_s)
         end
       end
     end
