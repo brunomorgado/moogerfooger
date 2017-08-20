@@ -1,5 +1,5 @@
 require "moogerfooger/errors"
-         require "pry"
+          
 module Mooger
   class Installer
     class GitSubtree
@@ -42,7 +42,6 @@ module Mooger
       end
 
       def add_remote(remote_name, remote_url)
-        binding.pry
         success = system("git remote add -f #{remote_name} #{remote_url}")
         unless success 
           remove_remote(remote_name)
