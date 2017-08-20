@@ -18,10 +18,10 @@ module Mooger
    end
 
    def self.from_hash hash
-     moog = new(hash[:name])
-     moog.repo = hash[:repo]
-     moog.branch = hash[:branch]
-     moog.tag = hash[:tag]
+     moog = new(hash["name"])
+     moog.repo = hash["repo"]
+     moog.branch = hash["branch"]
+     moog.tag = hash["tag"]
      moog
    end
 
