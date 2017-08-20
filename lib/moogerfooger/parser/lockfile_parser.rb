@@ -1,6 +1,7 @@
 require 'yaml'
 require 'moogerfooger/shared_herlpers'
 
+require "pry"
 module Mooger
   class Parser
     class LockfileParser
@@ -28,6 +29,7 @@ module Mooger
       def populate_moogs moogs_hash
         moogs_hash.each { |name, specs|
           @moogs << Moog.from_hash(specs) 
+          binding.pry
         }
       end
     end
