@@ -22,6 +22,7 @@ module Mooger
      moog.repo = hash[:repo]
      moog.branch = hash[:branch]
      moog.tag = hash[:tag]
+     moog
    end
 
    def to_hash
