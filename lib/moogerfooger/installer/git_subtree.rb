@@ -14,7 +14,7 @@ module Mooger
           binding.pry
           check_if_remote_exists(moog.name)
           add_remote(moog.name, moog.repo)
-          add_subtree(Mooger.moogs_dir.split().last + moog.name, moog.name, moog.branch)
+          add_subtree(SharedHelpers.moogs_dir.split().last + moog.name, moog.name, moog.branch)
         end
       end
 
