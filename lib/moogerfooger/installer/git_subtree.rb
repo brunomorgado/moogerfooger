@@ -1,5 +1,5 @@
 require "moogerfooger/errors"
-          
+require "pry"         
 module Mooger
   class Installer
     class GitSubtree
@@ -11,6 +11,7 @@ module Mooger
       def generate
         ensure_clean
         @definition.moogs.each do |moog|
+          binding.pry
           check_if_remote_exists(moog.name)
           add_remote(moog.name, moog.repo)
           add_subtree(Mooger.moogs_dir.split().last + moog.name, moog.name, moog.branch)
@@ -42,6 +43,7 @@ module Mooger
       end
 
       def add_remote(remote_name, remote_url)
+        binding.pry
         success = system("git remote add -f #{remote_name} #{remote_url}")
         unless success 
           remove_remote(remote_name)
