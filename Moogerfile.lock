@@ -1,0 +1,6 @@
+---
+SILabsLib:
+  name: SILabsLib
+  repo: git@github.com:brunomorgado/RxErrorTracker.git
+  branch: master
+  tag: 

@@ -19,6 +19,11 @@ module Mooger
         Pathname.new(moogs_dir).untaint.expand_path
       end
 
+      def moogs_dir_path
+        moogs_dir_path = root + "Moogs"
+        Pathname.new(moogs_dir_path).untaint.expand_path
+      end
+
       def moogerfile
         moogerfile = find_moogerfile
         raise MoogerfileNotFound, "Could not locate Moogerfile" unless moogerfile
@@ -29,6 +34,11 @@ module Mooger
         lockfile = find_lockfile
         return nil if lockfile.nil?
         Pathname.new(lockfile).untaint.expand_path
+      end
+
+      def lockfile_path
+        lockfile_path = root + lockfile_names.first
+        Pathname.new(lockfile_path).untaint.expand_path
       end
 
       def file_exists?(file)

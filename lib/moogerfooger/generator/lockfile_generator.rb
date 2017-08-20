@@ -14,12 +14,12 @@ module Mooger
         new(definition).generate!
       end
 
-      private 
-
       def generate!
         generate_moogs_hash
         write_file
       end
+     
+      private 
 
       def generate_moogs_hash
         @definition.moogs.each do |moog|
@@ -28,10 +28,8 @@ module Mooger
       end
 
       def write_file
-        SharedHelpers.filesystem_access(SharedHelpers.lockfile) do |path|
-          File.open(path, "r+") do |file|
-            file.write(@moogs_hash.to_yaml)
-          end
+        File.open(SharedHelpers.lockfile_path.to_s, "w+") do |file|
+          file.write(@moogs_hash.to_yaml)
         end
       end
     end

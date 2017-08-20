@@ -6,16 +6,15 @@ module Mooger
 	class Definition
 
 		attr_reader(
-			:moogs,
+			:moogs
     )
 
     def self.build
       unless Mooger.locked?
-        definition = Dsl.evaluate(SharedHelpers.moogerfile)
+        definition = Dsl.evaluate(SharedHelpers.moogerfile).to_definition
         Generator::LockfileGenerator.generate(definition)
       end
       definition = Parser::LockfileParser.parse(SharedHelpers.lockfile).to_definition
-      definition
     end
 
     def initialize(moogs)

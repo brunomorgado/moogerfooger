@@ -5,14 +5,13 @@ module Mooger
     class << self
     end
 
-    def self.install(root, definition, options = {})
-      installer = new(root, definition)
+    def self.install(definition, options = {})
+      installer = new(definition)
       installer.run(options)
       installer
     end
 
-    def initialize(root, definition)
-      @root = root
+    def initialize(definition)
       @definition = definition
     end
 
@@ -33,11 +32,8 @@ module Mooger
 		end
 
     def create_moogs_dir
-      return if Mooger.moogs_dir.exist?
-      SharedHelpers.mkdir_p(p)
-    rescue Errno::EEXIST
-      raise PathError, "Could not install to path `#{Mooger.moogs_dir}` " \
-        "because a file already exists at that path. Either remove or rename the file so the directory can be created."
+      return if SharedHelpers.moogs_dir.exist?
+      Dir.mkdir(SharedHelpers.moogs_dir_path)
     end
   end
 end

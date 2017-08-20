@@ -18,9 +18,7 @@ module Mooger
 
     def definition(unlock)
       reset if unlock
-      @definition ||= begin
-                        Definition.build()
-                      end
+      @definition ||= Definition.build
     end
 
     def locked?

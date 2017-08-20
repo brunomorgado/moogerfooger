@@ -8,6 +8,7 @@ module Mooger
 		def self.evaluate(moogerfile)
 			builder = new
 			builder.eval_moogerfile(moogerfile)
+      builder
 		end
 
 		def initialize
