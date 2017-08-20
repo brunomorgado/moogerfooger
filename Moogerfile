@@ -1,1 +1,4 @@
-FAKE MOOGERFILE
+moog 'SILabsLib' do |m|
+  m.repo = "git@github.com:brunomorgado/RxErrorTracker.git"
+  m.branch = "master"
+end

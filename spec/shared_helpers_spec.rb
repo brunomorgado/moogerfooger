@@ -50,95 +50,85 @@ RSpec.describe Mooger::SharedHelpers do
       end
     end
 
-    describe "#default_moogs_dir" do
+    describe "#moogs_dir" do
 
-      it "should not be nil if default_moogs_dir exists" do
+      it "should not be nil if moogs_dir exists" do
         FakeFS.with_fresh do
-          Dir.mkdir("vendor")
-          expect(Mooger::SharedHelpers.default_moogs_dir).not_to be nil
+          Dir.mkdir("Moogs")
+          expect(Mooger::SharedHelpers.moogs_dir).not_to be nil
         end
       end
 
-      it "should create vendor dir if not present" do
+      it "should create Moogs dir if not present" do
         FakeFS.with_fresh do
           create_moogerfile
           Dir.mkdir("vendr")
-          expect(Mooger::SharedHelpers.default_moogs_dir).not_to be nil
+          expect(Mooger::SharedHelpers.moogs_dir).not_to be nil
         end
       end
 
-      it "default_moogs_dir should be a directory" do
+      it "moogs_dir should be a directory" do
         FakeFS.with_fresh do
-          Dir.mkdir("vendor")
-          expect(Mooger::SharedHelpers.default_moogs_dir.directory?).to be true
+          Dir.mkdir("Moogs")
+          expect(Mooger::SharedHelpers.moogs_dir.directory?).to be true
         end
       end
 
       it "should be a Pathname" do
         FakeFS.with_fresh do
-          Dir.mkdir("vendor")
-          expect(Mooger::SharedHelpers.default_moogs_dir).to be_a Pathname
+          Dir.mkdir("Moogs")
+          expect(Mooger::SharedHelpers.moogs_dir).to be_a Pathname
         end
       end
     end
 
-    describe "#default_moogerfile" do
+    describe "#moogerfile" do
 
       it "should not be nil if moogfile exists" do
         FakeFS.with_fresh do
           create_moogerfile
-          expect(Mooger::SharedHelpers.default_moogerfile).not_to be nil
+          expect(Mooger::SharedHelpers.moogerfile).not_to be nil
         end
       end
 
       it "default_moogfile should be a file" do
         FakeFS.with_fresh do
           create_moogerfile
-          expect(Mooger::SharedHelpers.default_moogerfile.file?).to be true
+          expect(Mooger::SharedHelpers.moogerfile.file?).to be true
         end
       end
 
       it "should raise MoogerfileNotFound if Moogerfile is not present" do
         FakeFS.with_fresh do
-          expect { Mooger::SharedHelpers.default_moogerfile }.to raise_error(Mooger::MoogerfileNotFound)
+          expect { Mooger::SharedHelpers.moogerfile }.to raise_error(Mooger::MoogerfileNotFound)
         end
       end
 
       it "should be a Pathname" do
         FakeFS.with_fresh do
           create_moogerfile
-          expect(Mooger::SharedHelpers.default_moogerfile).to be_a Pathname
+          expect(Mooger::SharedHelpers.moogerfile).to be_a Pathname
         end
       end
     end
 
-    describe "#default_lockfile" do
+    describe "#lockfile" do
 
-      it "should create a lockfile if it does not exist" do
-        FakeFS.with_fresh do
-          create_moogerfile
-          expect(Mooger::SharedHelpers.default_lockfile).not_to be nil
-        end
+      it "can be nil" do
+        expect(Mooger::SharedHelpers.lockfile).to be nil
       end
 
-
-      it "should raise MoogerfileNotFound if Moogerfile is not present" do
-        FakeFS.with_fresh do
-          expect { Mooger::SharedHelpers.default_lockfile }.to raise_error(Mooger::MoogerfileNotFound)
-        end
-      end
-
-      it "default_lockfile should be a file" do
+      it "lockfile should be a file" do
         FakeFS.with_fresh do
           create_lockfile
-          expect(Mooger::SharedHelpers.default_lockfile.file?).to be true
+          expect(Mooger::SharedHelpers.lockfile.file?).to be true
         end
       end
 
       it "should be a Pathname" do
         FakeFS.with_fresh do
           create_lockfile
-          expect(Mooger::SharedHelpers.default_lockfile).to be_a Pathname
+          expect(Mooger::SharedHelpers.lockfile).to be_a Pathname
         end
       end
     end

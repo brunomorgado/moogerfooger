@@ -1,20 +1,25 @@
+require 'moogerfooger/shared_herlpers'
+require 'moogerfooger/generator/lockfile_generator'
+require 'moogerfooger/parser/lockfile_parser'
+
 module Mooger
 	class Definition
 
 		attr_reader(
 			:moogs,
-      :moogerfile
     )
 
-    def self.build(moogerfile)
-      moogerfile = Pathname.new(moogerfile).expand_path
-      raise MoogerfileNotFound, "#{moogerfile} not found" unless moogerfile.file?
-      Dsl.evaluate(moogerfile)
+    def self.build
+      unless Mooger.locked?
+        definition = Dsl.evaluate(SharedHelpers.moogerfile)
+        Generator::LockfileGenerator.generate(definition)
+      end
+      definition = Parser::LockfileParser.parse(SharedHelpers.lockfile).to_definition
+      definition
     end
 
-    def initialize(moogs, moogerfile)
+    def initialize(moogs)
       @moogs = moogs
-      @moogerfile = moogerfile
     end
   end
 end

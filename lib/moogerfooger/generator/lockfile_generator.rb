@@ -14,12 +14,12 @@ module Mooger
         new(definition).generate!
       end
 
+      private 
+
       def generate!
         generate_moogs_hash
         write_file
       end
-
-      private 
 
       def generate_moogs_hash
         @definition.moogs.each do |moog|

@@ -8,7 +8,7 @@ module Mooger
       end
 
       def run
-        installer = Installer.install(Mooger.root, Mooger.definition, options)
+        installer = Installer.install(SharedHelpers.root, Mooger.definition(true), @options)
       end
     end
 end

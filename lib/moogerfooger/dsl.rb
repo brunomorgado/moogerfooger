@@ -8,7 +8,6 @@ module Mooger
 		def self.evaluate(moogerfile)
 			builder = new
 			builder.eval_moogerfile(moogerfile)
-			builder.to_definition(moogerfile)
 		end
 
 		def initialize
@@ -17,10 +16,8 @@ module Mooger
 		end
 
 		def eval_moogerfile(moogerfile, contents = nil)
-			expanded_moogerfile_path = Pathname.new(moogerfile).expand_path(@moogerfile && @moogerfile.parent)
-			original_moogerfile = @moogerfile
-			@moogerfile = expanded_moogerfile_path
-			contents ||= SharedHelpers.read_file(@moogerfile.to_s)
+			@moogerfile = moogerfile
+      contents ||= File.read(@moogerfile)
 			instance_eval(contents.dup.untaint, moogerfile.to_s, 1)
 		rescue Exception => e
 			message = "There was an error " \
@@ -29,26 +26,31 @@ module Mooger
 
 			raise DSLError.new(message, moogerfile, e.backtrace, contents)
 		ensure
-			@moogerfile = original_moogerfile
+			@moogerfile = moogerfile
 		end
 
-		def moog(name, &block)
-			unless block_given?
-				raise InvalidOption, "You need to pass a config block to #moog"
-			end
+    def to_definition()
+      Definition.new(@moogs)
+    end
 
-      unless !@moogs.any?{|m| m.name == name}
-        raise MoogerfileError, "You specified: #{name} multiple times"
-      end
+    def moog(name, &block)
+      raise InvalidOption, "You need to pass a config block to #moog" if !block_given?
 
+      ensure_no_duplicate_moogs name
       moog = Moog.new(name)
-
       yield(moog)
       @moogs << moog
     end
 
-    def to_definition(moogerfile)
-      Definition.new(@moogs, moogerfile)
+    private
+
+    def ensure_block_given(block)
+    end
+
+    def ensure_no_duplicate_moogs(name)
+      unless !@moogs.any?{|m| m.name == name}
+        raise MoogerfileError, "You specified: #{name} multiple times"
+      end
     end
 
     class DSLError < Mooger::MoogerfileError

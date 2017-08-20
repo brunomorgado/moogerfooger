@@ -11,58 +11,28 @@ module Mooger
         Pathname.new(moogerfile).untaint.expand_path.parent
       end
 
-      def default_moogs_dir
-        moogs_dir = find_directory("vendor")
+      def moogs_dir
+        moogs_dir = find_directory("Moogs")
         if moogs_dir.nil? 
-          moogs_dir = root + "vendor"
+          moogs_dir = root + "Moogs"
         end
         Pathname.new(moogs_dir).untaint.expand_path
       end
 
-      def default_moogerfile
+      def moogerfile
         moogerfile = find_moogerfile
         raise MoogerfileNotFound, "Could not locate Moogerfile" unless moogerfile
         Pathname.new(moogerfile).untaint.expand_path
       end
 
-      def default_lockfile
+      def lockfile
         lockfile = find_lockfile
-        if lockfile.nil? 
-          lockfile = root + lockfile_names.first
-        end
+        return nil if lockfile.nil?
         Pathname.new(lockfile).untaint.expand_path
       end
 
-      def filesystem_access(path, action = :write, &block)
-        # Use block.call instead of yield because of a bug in Ruby 2.2.2
-        # See https://github.com/bundler/bundler/issues/5341 for details
-        block.call(path.dup.untaint)
-      rescue Errno::EACCES
-        raise PermissionError.new(path, action)
-      rescue Errno::EAGAIN
-        raise TemporaryResourceError.new(path, action)
-      rescue Errno::EPROTO
-        raise VirtualProtocolError.new
-      rescue Errno::ENOSPC
-        raise NoSpaceOnDeviceError.new(path, action)
-      rescue *[const_get_safely(:ENOTSUP, Errno)].compact
-        raise OperationNotSupportedError.new(path, action)
-      rescue Errno::EEXIST, Errno::ENOENT
-        raise
-      rescue SystemCallError => e
-        raise GenericSystemCallError.new(e, "There was an error accessing `#{path}`.")
-      end
-
-      def mkdir_p(path)
-        filesystem_access(path, :write) do |p|
-          FileUtils.mkdir_p(p)
-        end
-      end
-
-      def read_file(file)
-        filesystem_access(path, :write) do |p|
-          File.open(file, "rb", &:read)
-        end
+      def file_exists?(file)
+        file && File.file?(file)
       end
 
       private
