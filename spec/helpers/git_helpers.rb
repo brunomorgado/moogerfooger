@@ -19,7 +19,9 @@ module GitHelpers
 
     Dir.chdir(path) do
       # Create a bogus file
-      File.open('file', 'w') { |f| f.write('hello') }
+      File.open('file', 'w') do
+        |f| f.write('hello') 
+      end
 
       git %|init .|
       git %|add .|
@@ -61,7 +63,6 @@ module GitHelpers
     ENV['GIT_COMMITTER_DATE']  = time
 
     system "git #{command}"
-    #shellout!("git #{command}")
   ensure
     ENV.replace(original_env.to_hash)
   end
@@ -70,9 +71,15 @@ module GitHelpers
     path = File.join(GIT_REPOS_PATH, name)
   end
 
-  def create_file(path)
-    Dir.chdir(path) do
-      File.open('file', 'w') { |f| f.write('hello') }
+  def do_in_repo(repo, &block)
+    Dir.chdir(path_for_git_repo(repo)) do
+      block.call
     end
+  end
+
+  def create_file(name = "dummy")
+      File.open(name, "w") do |f|
+        f.puts("DUMMY FILE")
+      end
   end
 end
