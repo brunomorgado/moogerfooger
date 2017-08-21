@@ -29,22 +29,23 @@ RSpec.describe Mooger::GitHelpers do
     end
   end
 
-  describe "#repo_has_changes?" do
+  #describe "#repo_has_changes?" do
 
-    before(:each) do
-      @remote_name = "lib#{Time.now.to_i}#{$count}"
-      $count += 1
-    end
+    #before(:each) do
+      #@remote_name = "lib#{Time.now.to_i}#{$count}"
+      #$count += 1
+    #end
 
-    it "should return true if repo has unstaged files" do
-      create_file(path_for_git_repo(lib_name))
-      expect(Mooger::GitHelpers.repo_has_changes?).to be false
-    end
+    #it "should return true if repo has unstaged files" do
+      #create_file(path_for_git_repo(lib_name))
+      #expect(Mooger::GitHelpers.repo_has_changes?).to be false
+    #end
 
-    it "should return false if remote has no changes" do
-      git("reset --hard")
-      expect(Mooger::GitHelpers.repo_has_changes?).to be false
-    end
+    #it "should return false if remote has no changes" do
+      #git("reset --hard")
+      #expect(Mooger::GitHelpers.repo_has_changes?).to be false
+    #end
 
-  end
+  #end
+
 end

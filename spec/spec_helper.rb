@@ -4,6 +4,7 @@ require 'fakefs/safe'
 require 'pp'
 require 'rspec'
 require 'pry'
+require 'helpers/git_helpers'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
