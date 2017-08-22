@@ -14,13 +14,14 @@ RSpec.describe Mooger::GitHelpers do
       suffix = "#{Time.now.to_i}#{$count}"
       @repo_name = "repo_#{suffix}"
       @remote_name = "remote_#{suffix}"
-      git_repo(@repo_name)
+      @remote_url = "#{path_for_git_repo(@repo_name)}"
+      create_git_repo(@repo_name)
       $count += 1
     end
 
     it "should return true if remote exists" do
       do_in_repo(@repo_name) do
-        Mooger::GitHelpers.add_remote(@remote_name, path_for_git_repo(@repo_name))
+        Mooger::GitHelpers.add_remote(@remote_name, @remote_url)
         expect(Mooger::GitHelpers.remote_exists?(@remote_name)).to be true
       end
     end
@@ -39,8 +40,7 @@ RSpec.describe Mooger::GitHelpers do
     before(:each) do
       suffix = "#{Time.now.to_i}#{$count}"
       @repo_name = "repo_#{suffix}"
-      @remote_name = "remote_#{suffix}"
-      git_repo(@repo_name)
+      create_git_repo(@repo_name)
       $count += 1
     end
 
