@@ -14,6 +14,12 @@ module GitHelpers
       git %|config core.sharedrepository 1|
       git %|config receive.denyNonFastforwards true|
       git %|config receive.denyCurrentBranch ignore|
+    end
+
+    Dir.chdir(path) do
+      git %|init .|
+      git %|add .|
+      git %|commit -am "Initial commit for #{name}..."|
 
       options[:tags].each do |tag|
         File.open('tag', 'w') { |f| f.write(tag) }
@@ -32,36 +38,6 @@ module GitHelpers
         git %|checkout master|
       end if options[:branches]
     end
-
-    #Dir.chdir(path) do
-    ## Create a bogus file
-    #File.open('file', 'w') do
-    #|f| f.write('hello') 
-    #end
-
-    #git %|init .|
-    #git %|add .|
-    #git %|commit -am "Initial commit for #{name}..."|
-    #git %|remote add origin "#{remote_url}"|
-    #git %|push origin master|
-
-    #options[:tags].each do |tag|
-    #File.open('tag', 'w') { |f| f.write(tag) }
-    #git %|add tag|
-    #git %|commit -am "Create tag #{tag}"|
-    #git %|tag "#{tag}"|
-    #git %|push origin "#{tag}"|
-    #end if options[:tags]
-
-    #options[:branches].each do |branch|
-    #git %|checkout -b #{branch} master|
-    #File.open('branch', 'w') { |f| f.write(branch) }
-    #git %|add branch|
-    #git %|commit -am "Create branch #{branch}"|
-    #git %|push origin "#{branch}"|
-    #git %|checkout master|
-    #end if options[:branches]
-    #end
 
     path
   end

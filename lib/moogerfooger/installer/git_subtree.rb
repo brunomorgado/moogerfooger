@@ -1,4 +1,5 @@
 require "moogerfooger/errors"
+require "moogerfooger/git_helpers"
 require "pry"         
 module Mooger
   class Installer
@@ -11,10 +12,13 @@ module Mooger
       def generate
         ensure_clean
         @definition.moogs.each do |moog|
-          binding.pry
           check_if_remote_exists(moog.name)
-          add_remote(moog.name, moog.repo)
-          add_subtree(SharedHelpers.moogs_dir.split().last + moog.name, moog.name, moog.branch)
+          begin
+            GitHelpers.add_remote(moog.name, moog.repo)
+            GitHelpers.add_subtree(SharedHelpers.moogs_dir.split().last + moog.name, moog.name, moog.branch)
+          rescue 
+            GitHelpers.remove_remote(moog.name)
+          end
         end
       end
 
@@ -33,34 +37,8 @@ module Mooger
       end
 
       def check_if_remote_exists(remote_name)
-        if remote_exists?(remote_name)
+        if Githelpers.remote_exists?(remote_name)
           raise GitRemoteExistsError, "There is already a remote called #{remote_name}. Cannot continue."
-        end
-      end
-
-      def remote_exists?(remote_name)
-        system "git config remote.#{remote_name}.url > /dev/null"
-      end
-
-      def add_remote(remote_name, remote_url)
-        binding.pry
-        success = system("git remote add -f #{remote_name} #{remote_url}")
-        unless success 
-          remove_remote(remote_name)
-          raise GitRemoteAddError, "Failed to add remote with name: #{remote_name} and url: #{remote_url}"
-        end
-      end
-
-      def remove_remote(remote_name)
-        return unless remote_exists?(remote_name)
-        system "git remote remove #{remote_name}"
-      end
-
-      def add_subtree(path, remote_name, branch)
-        success = system("git subtree add --prefix=#{path.to_s} #{remote_name} #{branch} --squash")
-        unless success
-          remove_remote(remote_name)
-          raise GitSubtreeAddError, "Failed to add subtree to remote with name: #{remote_name}"
         end
       end
     end

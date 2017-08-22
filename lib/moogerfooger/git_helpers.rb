@@ -16,7 +16,6 @@ module Mooger
       def add_remote(remote_name, remote_url)
         success = system("git remote add -f #{remote_name} #{remote_url}")
         unless success 
-          remove_remote(remote_name)
           raise GitRemoteAddError, "Failed to add remote with name: #{remote_name} and url: #{remote_url}"
         end
       end
@@ -29,7 +28,6 @@ module Mooger
       def add_subtree(path, remote_name, branch)
         success = system("git subtree add --prefix=#{path.to_s} #{remote_name} #{branch} --squash")
         unless success
-          remove_remote(remote_name)
           raise GitSubtreeAddError, "Failed to add subtree to remote with name: #{remote_name}"
         end
       end
