@@ -5,18 +5,19 @@ module Mooger
     class << self
     end
 
-    def self.install(definition, options = {})
-      installer = new(definition)
+    def self.install(definition, moogs_dir, options = {})
+      installer = new(definition, moogs_dir)
       installer.run(options)
       installer
     end
 
-    def initialize(definition)
+    def initialize(definition, moogs_dir)
       @definition = definition
+      @moogs_dir = moogs_dir
     end
 
     def run(options)
-      create_moogs_dir
+      create_moogs_dir_if_needed
       if @definition.moogs.empty?
         #TODO: warn empty moogerfile
         return
@@ -27,12 +28,12 @@ module Mooger
 		private
 
 		def install
-      subtree_installer = Mooger::Installer::GitSubtree.new(@definition, SharedHelpers.moogs_dir)
+      subtree_installer = Mooger::Installer::GitSubtree.new(@definition, @moogs_dir)
       subtree_installer.generate
 		end
 
-    def create_moogs_dir
-      return if SharedHelpers.moogs_dir.exist?
+    def create_moogs_dir_if_needed
+      return if @moogs_dir.exist?
       Dir.mkdir(SharedHelpers.moogs_dir_path)
     end
   end
