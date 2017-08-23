@@ -132,4 +132,24 @@ RSpec.describe Mooger::GitHelpers do
       end
     end
   end
+
+  describe "#remove_subtree" do
+
+    let(:add_subtree) {Mooger::GitHelpers.add_subtree(remote_name, remote_name, "master")}
+    let(:remove_subtree) {Mooger::GitHelpers.remove_subtree(remote_name)}
+
+    before(:each) do
+      create_git_repo(repo_name)
+    end
+
+    it "should raise GitSubtreeAddError if there are uncommited files" do
+      do_in_repo(repo_name) do
+        add_valid_remote
+        add_subtree
+        expect(Dir.exists?(remote_name)).to be true
+        remove_subtree
+        expect(Dir.exists?(remote_name)).to be false
+      end
+    end
+  end
 end

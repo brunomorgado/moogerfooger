@@ -27,7 +27,7 @@ module Mooger
 		private
 
 		def install
-      subtree_installer = Mooger::Installer::GitSubtree.new(@definition)
+      subtree_installer = Mooger::Installer::GitSubtree.new(@definition, SharedHelpers.moogs_dir)
       subtree_installer.generate
 		end
 

@@ -1,3 +1,4 @@
+require "pry"
 module Mooger
   module GitHelpers
 
@@ -30,6 +31,11 @@ module Mooger
         unless success
           raise GitSubtreeAddError, "Failed to add subtree to remote with name: #{remote_name}"
         end
+      end
+
+      def remove_subtree(path)
+        return unless Dir.exists?(path)
+        system "rm -rf #{path}"
       end
     end
   end

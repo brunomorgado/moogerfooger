@@ -18,6 +18,7 @@ module GitHelpers
 
     Dir.chdir(path) do
       git %|init .|
+      system %|rm HEAD|
       git %|add .|
       git %|commit -am "Initial commit for #{name}..."|
 

@@ -6,18 +6,13 @@ require_relative "../../lib/moogerfooger/git_helpers"
 RSpec.describe Mooger::Installer::GitSubtree do
 
   let(:repo_name) {"repo_#{SecureRandom.hex(5)}"}
-  let(:remote_url) {"#{path_for_git_repo(repo_name)}"}
-  let(:remote_name) {"remote_#{SecureRandom.hex(5)}"}
-  let(:add_valid_remote) {Mooger::GitHelpers.add_remote(remote_name, remote_url)}
-  let(:moogs) {[build_moog, build_moog]}
+  let(:moogs) {[build_moog("moog1", path_for_git_repo(repo_name)), build_moog("moog2", path_for_git_repo(repo_name))]}
+  let(:corrupted_moogs) {[build_moog("moog1", "wrong_url"), build_moog("moog2", "wrong_url")]}
   let(:definition) {build_definition(moogs)}
-  let(:subtree_installer) {build_subtree_installer(definition)}
-
-  before(:each) do
-    moogs
-    definition
-    subtree_installer
-  end
+  let(:corrupted_definition) {build_definition(corrupted_moogs)}
+  let(:moogs_dir) {path_for_git_repo(repo_name) + "/Moogs"}
+  let(:subtree_installer) {build_subtree_installer(definition, moogs_dir)}
+  let(:corrupted_subtree_installer) {build_subtree_installer(corrupted_definition, moogs_dir)}
 
   describe "#generate" do
 
@@ -39,19 +34,50 @@ RSpec.describe Mooger::Installer::GitSubtree do
     it "should add the specified remotes to the git repo" do
       create_git_repo(repo_name)
       do_in_repo(repo_name) do
-      add_valid_remote
-        expect(Mooger::GitHelpers.remote_exists?(remote_name)).to be true
-        expect(Mooger::GitHelpers.remote_exists?("invalid_name")).to be false
+        build_moogerfile
+        build_moogs_dir
+        git("add .")
+        git("commit -m 'Add moogerfile'")
+        subtree_installer.generate
+        expect(Mooger::GitHelpers.remote_exists?("moog1")).to be true
+        expect(Mooger::GitHelpers.remote_exists?("moog2")).to be true
+        expect(Mooger::GitHelpers.remote_exists?("non_existent")).to be false
+        # Should generate 2 remotes
+        expect(`git remote -v | wc -l`.to_i/2).to eq 2
       end
     end
 
-    it "should add the specified remotes to the git repo" do
+    it "should add the subtrees to the right path" do
       create_git_repo(repo_name)
-      do_in_repo("invalid_repo") do
-        add_valid_remote
-        expect(Mooger::GitHelpers.remote_exists?(remote_name)).to be false
+      do_in_repo(repo_name) do
+        build_moogerfile
+        build_moogs_dir
+        git("add .")
+        git("commit -m 'Add moogerfile'")
+        subtree_installer.generate
+        expect(Dir.exists?(File.join(moogs_dir, "moog1"))).to be true
+        expect(Dir.exists?(File.join(moogs_dir, "moog2"))).to be true
       end
     end
 
+    it "should not add any remote on failure" do
+      create_git_repo(repo_name)
+      do_in_repo(repo_name) do
+        corrupted_subtree_installer.generate
+        expect(Mooger::GitHelpers.remote_exists?("moog1")).to be false
+        expect(Mooger::GitHelpers.remote_exists?("moog2")).to be false
+        # Should generate 0 remotes
+        expect(`git remote -v | wc -l`.to_i).to eq 0
+      end
+    end
+
+    it "should not add any subtree on failure" do
+      create_git_repo(repo_name)
+      do_in_repo(repo_name) do
+        corrupted_subtree_installer.generate
+        expect(Dir.exists?(File.join(moogs_dir, "moog1"))).to be false
+        expect(Dir.exists?(File.join(moogs_dir, "moog2"))).to be false
+      end
+    end
   end
 end
