@@ -10,7 +10,7 @@ module Builder
   end
 
   def build_moogs_dir
-      Dir.mkdir(Mooger::SharedHelpers.moogs_dir_path)
+    Dir.mkdir(Mooger::SharedHelpers.moogs_dir_path.to_s)
   end
 
   def build_moog(name=SecureRandom.hex(5), repo="", branch= "master", tag="v1.2.3")

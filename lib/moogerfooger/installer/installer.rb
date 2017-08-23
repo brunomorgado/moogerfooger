@@ -7,7 +7,7 @@ module Mooger
 
     def self.install(definition, moogs_dir, options = {})
       installer = new(definition, moogs_dir)
-      installer.run(options)
+      installer.run
       installer
     end
 
@@ -16,7 +16,7 @@ module Mooger
       @moogs_dir = moogs_dir
     end
 
-    def run(options)
+    def run
       create_moogs_dir_if_needed
       if @definition.moogs.empty?
         #TODO: warn empty moogerfile
@@ -34,7 +34,7 @@ module Mooger
 
     def create_moogs_dir_if_needed
       return if @moogs_dir.exist?
-      Dir.mkdir(SharedHelpers.moogs_dir_path)
+      Dir.mkdir(SharedHelpers.moogs_dir_path.to_s)
     end
   end
 end
