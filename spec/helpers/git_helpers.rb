@@ -65,6 +65,8 @@ module GitHelpers
   end
 
   def do_in_repo(repo, &block)
+    path = path_for_git_repo(repo)
+    return if !File.exists?(path)
     Dir.chdir(path_for_git_repo(repo)) do
       block.call
     end

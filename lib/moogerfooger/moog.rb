@@ -10,11 +10,11 @@ module Mooger
      :tag
    ) 
 
-   def initialize(name)
+   def initialize(name, repo=nil, branch=nil, tag=nil)
      @name = name
-     @repo = nil
-     @branch = nil
-     @tag = nil
+     @repo = repo
+     @branch = branch
+     @tag = tag
    end
 
    def self.from_hash hash

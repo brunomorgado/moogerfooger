@@ -25,19 +25,13 @@ module Mooger
       private
 
       def ensure_clean
-        if repo_has_changes?
+        if GitHelpers.repo_has_changes?
           raise GitRepoHasChangesError, "Working tree has modifications. Cannot continue"
         end
       end
 
-      def repo_has_changes?
-        has_staged_changes = !system("git diff --quiet --exit-code")
-        has_unstaged_changes = !system("git diff --cached --quiet --exit-code")
-        has_unstaged_changes || has_staged_changes
-      end
-
       def check_if_remote_exists(remote_name)
-        if Githelpers.remote_exists?(remote_name)
+        if GitHelpers.remote_exists?(remote_name)
           raise GitRemoteExistsError, "There is already a remote called #{remote_name}. Cannot continue."
         end
       end

@@ -2,7 +2,6 @@ require "spec_helper"
 require_relative "../lib/moogerfooger/errors"
 require_relative '../lib/moogerfooger/shared_herlpers'
 require 'fakefs/safe'
-require 'byebug'
 
 RSpec.describe Mooger::SharedHelpers do
 

@@ -5,6 +5,7 @@ require 'pp'
 require 'rspec'
 require 'pry'
 require 'helpers/git_helpers'
+require 'builders/builder'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -15,4 +16,5 @@ RSpec.configure do |config|
   end
 
   config.include(GitHelpers)
+  config.include(Builder)
 end
