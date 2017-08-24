@@ -8,37 +8,75 @@ RSpec.describe Mooger::Installer::GitSubtree do
 
   let(:repo_name) {"repo_#{SecureRandom.hex(5)}"}
   let(:moogs) {[build_moog("moog1", path_for_git_repo(repo_name)), build_moog("moog2", path_for_git_repo(repo_name))]}
-  let(:corrupted_moogs) {[build_moog("moog1", "wrong_url"), build_moog("moog2", "wrong_url")]}
   let(:definition) {build_definition(moogs)}
-  let(:corrupted_definition) {build_definition(corrupted_moogs)}
   let(:moogs_dir) {path_for_git_repo(repo_name) + "/Moogs"}
   let(:subtree_installer) {build_subtree_installer(definition, moogs_dir)}
-  let(:corrupted_subtree_installer) {build_subtree_installer(corrupted_definition, moogs_dir)}
 
-  #describe "#run" do
+  describe "#run" do
 
-    #let(:moogs_dir) {Mooger::SharedHelpers.moogs_dir}
-    #let(:do_run) {Mooger::Installer::GitSubtree.new(definition, moogs_dir).run}
+    let(:moogs_dir) {Mooger::SharedHelpers.moogs_dir}
 
-    #it "should create the moogs_dir if not present" do
-      #FakeFS.with_fresh do
-        #build_moogerfile
-        #expect(Dir.exists?(Mooger::SharedHelpers.moogs_dir_path)).to be false
-        #do_run
-        #expect(Dir.exists?(Mooger::SharedHelpers.moogs_dir_path)).to be true
-      #end
-    #end
+    context "definition has moogs" do
+      it "should create the moogs_dir if not present" do
+        FakeFS.with_fresh do
+          build_moogerfile
+          installer = build_subtree_installer(definition, moogs_dir)
+          allow(installer).to receive(:generate)
+          expect(Dir.exists?(Mooger::SharedHelpers.moogs_dir_path)).to be false
+          installer.run
+          expect(Dir.exists?(Mooger::SharedHelpers.moogs_dir_path)).to be true
+        end
+      end
 
-    #it "should not fail if moogs_dir is already present" do
-      #FakeFS.with_fresh do
-        #build_moogerfile
-        #build_moogs_dir
-        #expect(Dir.exists?(Mooger::SharedHelpers.moogs_dir_path)).to be true
-        #do_run
-        #expect(Dir.exists?(Mooger::SharedHelpers.moogs_dir_path)).to be true
-      #end
-    #end
-  #end
+      it "should not fail if moogs_dir is already present" do
+        FakeFS.with_fresh do
+          build_moogerfile
+          build_moogs_dir
+          installer = build_subtree_installer(definition, moogs_dir)
+          allow(installer).to receive(:generate)
+          expect(Dir.exists?(Mooger::SharedHelpers.moogs_dir_path)).to be true
+          installer.run
+          expect(Dir.exists?(Mooger::SharedHelpers.moogs_dir_path)).to be true
+        end
+      end
+
+      it "should invoke generate method" do
+        FakeFS.with_fresh do
+          build_moogerfile
+          installer = build_subtree_installer(definition, moogs_dir)
+          allow(installer).to receive(:generate)
+          expect(installer).to receive(:generate)
+          installer.run
+        end
+      end
+    end
+
+    context "definition has no moogs" do
+
+      let(:moogs) {[]}
+
+      it "should not create the moogs_dir" do
+        FakeFS.with_fresh do
+          build_moogerfile
+          installer = build_subtree_installer(definition, moogs_dir)
+          allow(installer).to receive(:generate)
+          expect(Dir.exists?(Mooger::SharedHelpers.moogs_dir_path)).to be false
+          installer.run
+          expect(Dir.exists?(Mooger::SharedHelpers.moogs_dir_path)).to be false
+        end
+      end
+
+      it "should not invoke generate method" do
+        FakeFS.with_fresh do
+          build_moogerfile
+          installer = build_subtree_installer(definition, moogs_dir)
+          allow(installer).to receive(:generate)
+          expect(installer).to_not receive(:generate)
+          installer.run
+        end
+      end
+    end
+  end
 
   describe "#generate" do
 
@@ -86,23 +124,30 @@ RSpec.describe Mooger::Installer::GitSubtree do
       end
     end
 
-    it "should not add any remote on failure" do
-      create_git_repo(repo_name)
-      do_in_repo(repo_name) do
-        corrupted_subtree_installer.generate
-        expect(Mooger::GitHelpers.remote_exists?("moog1")).to be false
-        expect(Mooger::GitHelpers.remote_exists?("moog2")).to be false
-        # Should generate 0 remotes
-        expect(`git remote -v | wc -l`.to_i).to eq 0
-      end
-    end
+    context "on failure" do
 
-    it "should not add any subtree on failure" do
-      create_git_repo(repo_name)
-      do_in_repo(repo_name) do
-        corrupted_subtree_installer.generate
-        expect(Dir.exists?(File.join(moogs_dir, "moog1"))).to be false
-        expect(Dir.exists?(File.join(moogs_dir, "moog2"))).to be false
+      let(:moogs) {[build_moog("moog1", "wrong_url"), build_moog("moog2", "wrong_url")]}
+      let(:definition) {build_definition(moogs)}
+      let(:subtree_installer) {build_subtree_installer(definition, moogs_dir)}
+
+      it "should not add any remote" do
+        create_git_repo(repo_name)
+        do_in_repo(repo_name) do
+          subtree_installer.generate
+          expect(Mooger::GitHelpers.remote_exists?("moog1")).to be false
+          expect(Mooger::GitHelpers.remote_exists?("moog2")).to be false
+          # Should generate 0 remotes
+          expect(`git remote -v | wc -l`.to_i).to eq 0
+        end
+      end
+
+      it "should not add any subtree" do
+        create_git_repo(repo_name)
+        do_in_repo(repo_name) do
+          subtree_installer.generate
+          expect(Dir.exists?(File.join(moogs_dir, "moog1"))).to be false
+          expect(Dir.exists?(File.join(moogs_dir, "moog2"))).to be false
+        end
       end
     end
   end

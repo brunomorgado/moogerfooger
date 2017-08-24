@@ -11,11 +11,11 @@ module Mooger
       end
 
       def run
-        create_moogs_dir_if_needed
         if @definition.moogs.empty?
           #TODO: warn empty moogerfile
           return
         end
+        create_moogs_dir_if_needed
         generate
       end
 
