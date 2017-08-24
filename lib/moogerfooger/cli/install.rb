@@ -8,7 +8,8 @@ module Mooger
       end
 
       def run
-        installer = Installer.install(Mooger.definition(true), SharedHelpers.moogs_dir, @options)
+        installer = Mooger::Installer::GitSubtree.new(Mooger.definition(true), SharedHelpers.moogs_dir, @options)
+        installer.run
       end
     end
 end

@@ -1,5 +1,6 @@
 require "spec_helper"
 require "pry"
+require 'fakefs/safe'
 require_relative "../../lib/moogerfooger/installer/git_subtree"
 require_relative "../../lib/moogerfooger/git_helpers"
 
@@ -13,6 +14,31 @@ RSpec.describe Mooger::Installer::GitSubtree do
   let(:moogs_dir) {path_for_git_repo(repo_name) + "/Moogs"}
   let(:subtree_installer) {build_subtree_installer(definition, moogs_dir)}
   let(:corrupted_subtree_installer) {build_subtree_installer(corrupted_definition, moogs_dir)}
+
+  #describe "#run" do
+
+    #let(:moogs_dir) {Mooger::SharedHelpers.moogs_dir}
+    #let(:do_run) {Mooger::Installer::GitSubtree.new(definition, moogs_dir).run}
+
+    #it "should create the moogs_dir if not present" do
+      #FakeFS.with_fresh do
+        #build_moogerfile
+        #expect(Dir.exists?(Mooger::SharedHelpers.moogs_dir_path)).to be false
+        #do_run
+        #expect(Dir.exists?(Mooger::SharedHelpers.moogs_dir_path)).to be true
+      #end
+    #end
+
+    #it "should not fail if moogs_dir is already present" do
+      #FakeFS.with_fresh do
+        #build_moogerfile
+        #build_moogs_dir
+        #expect(Dir.exists?(Mooger::SharedHelpers.moogs_dir_path)).to be true
+        #do_run
+        #expect(Dir.exists?(Mooger::SharedHelpers.moogs_dir_path)).to be true
+      #end
+    #end
+  #end
 
   describe "#generate" do
 

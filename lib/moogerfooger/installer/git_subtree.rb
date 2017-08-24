@@ -5,9 +5,18 @@ module Mooger
   class Installer
     class GitSubtree
 
-      def initialize(definition, moogs_dir)
+      def initialize(definition, moogs_dir, options = {})
         @definition = definition
         @moogs_dir = moogs_dir
+      end
+
+      def run
+        create_moogs_dir_if_needed
+        if @definition.moogs.empty?
+          #TODO: warn empty moogerfile
+          return
+        end
+        generate
       end
 
       def generate
@@ -25,6 +34,11 @@ module Mooger
       end
 
       private
+
+      def create_moogs_dir_if_needed
+        return if @moogs_dir.exist?
+        Dir.mkdir(SharedHelpers.moogs_dir_path.to_s)
+      end
 
       def ensure_clean
         if GitHelpers.repo_has_changes?
