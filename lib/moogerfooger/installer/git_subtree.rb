@@ -36,6 +36,7 @@ module Mooger
       def create_moogs_dir_if_needed
         return unless @moogs_dir.nil?
         Dir.mkdir(SharedHelpers.moogs_dir_path.to_s)
+        @moogs_dir = SharedHelpers.moogs_dir
       end
 
       def ensure_definition_has_moogs
