@@ -11,10 +11,7 @@ module Mooger
       end
 
       def run
-        if @definition.moogs.empty?
-          #TODO: warn empty moogerfile
-          return
-        end
+        ensure_definition_has_moogs
         create_moogs_dir_if_needed
         generate
       end
@@ -26,9 +23,10 @@ module Mooger
           begin
             GitHelpers.add_remote(moog.name, moog.repo)
             GitHelpers.add_subtree(subtree_path(moog.name), moog.name, moog.branch)
-          rescue 
+          rescue => e
             GitHelpers.remove_remote(moog.name)
             GitHelpers.remove_subtree(subtree_path(moog.name))
+            raise e
           end
         end
       end
@@ -36,8 +34,14 @@ module Mooger
       private
 
       def create_moogs_dir_if_needed
-        return if @moogs_dir.exist?
+        return unless @moogs_dir.nil?
         Dir.mkdir(SharedHelpers.moogs_dir_path.to_s)
+      end
+
+      def ensure_definition_has_moogs
+        if @definition.moogs.empty?
+          raise DefinitionHasNoMoogsError, "The definition has no moogs. Cannot continue"
+        end
       end
 
       def ensure_clean
@@ -53,7 +57,7 @@ module Mooger
       end
 
       def subtree_path(remote_name)
-        File.join(@moogs_dir.split('/').last, remote_name)
+        File.join(@moogs_dir.split.last, remote_name)
       end
     end
   end

@@ -13,9 +13,7 @@ module Mooger
 
       def moogs_dir
         moogs_dir = find_directory("Moogs")
-        if moogs_dir.nil? 
-          moogs_dir = root + "Moogs"
-        end
+        return nil if moogs_dir.nil?
         Pathname.new(moogs_dir).untaint.expand_path
       end
 
@@ -43,6 +41,11 @@ module Mooger
 
       def file_exists?(file)
         file && File.file?(file)
+      end
+
+      def installed_moogs
+        return [] if moogs_dir.nil? 
+         Dir.entries(moogs_dir).select {|entry| File.directory?(moogs_dir)  and !(entry =='.' || entry == '..') }
       end
 
       private

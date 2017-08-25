@@ -14,9 +14,10 @@ module Mooger
     def reset
       @definition = nil
       File.delete(SharedHelpers.lockfile) if SharedHelpers.file_exists? SharedHelpers.lockfile
+      FileUtils.rm_rf(SharedHelpers.moogs_dir_path.to_s)
     end
 
-    def definition(unlock)
+    def definition(unlock=false)
       reset if unlock
       @definition ||= Definition.build
     end

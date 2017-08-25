@@ -186,5 +186,36 @@ RSpec.describe Mooger::SharedHelpers do
         end
       end
     end
+
+    describe "#installed_moogs" do
+
+      it "should return an array with the names of the installed moogs" do
+        FakeFS.with_fresh do
+          create_moogerfile
+          create_moogs_dir
+          Dir.chdir(Mooger::SharedHelpers.moogs_dir_path) do
+            Dir.mkdir("Moog1")
+            Dir.mkdir("Moog2")
+            Dir.mkdir("Moog3")
+          end
+          expect(Mooger::SharedHelpers.installed_moogs).to eq(["Moog1", "Moog2", "Moog3"])
+        end
+      end
+
+      it "should return an empty array if moogs dir does not exist" do
+        FakeFS.with_fresh do
+          create_moogerfile
+          expect(Mooger::SharedHelpers.installed_moogs).to eq([])
+        end
+      end
+
+      it "should return an empty array if there are no installed moogs" do
+        FakeFS.with_fresh do
+          create_moogerfile
+          create_moogs_dir
+          expect(Mooger::SharedHelpers.installed_moogs).to eq([])
+        end
+      end
+    end
   end
 end

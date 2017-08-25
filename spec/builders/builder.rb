@@ -3,9 +3,17 @@ require "pry"
 
 module Builder
 
-  def build_moogerfile
+  def build_moogerfile(*args)
+    str  = args.shift || ""
     File.open("Moogerfile", "w") do |f|
-      f.puts("DUMMY FILE")
+      f.puts strip_whitespace(str)
+    end
+  end
+
+  def build_lockfile(*args)
+    str  = args.shift || ""
+    File.open("Moogerfile.lock", "w") do |f|
+      f.puts strip_whitespace(str)
     end
   end
 
@@ -24,5 +32,13 @@ module Builder
   def build_subtree_installer(definition, moogs_dir)
     Mooger::Installer::GitSubtree.new(definition, moogs_dir)
   end
+
+  private
+
+  def strip_whitespace(str)
+    spaces = str[/\A\s+/, 0] || ""
+    str.gsub(/^#{spaces}/, "")
+  end
+
 end
 
