@@ -29,8 +29,8 @@ module Builder
     Mooger::Definition.new(moogs)
   end
 
-  def build_subtree_installer(definition, moogs_dir)
-    Mooger::Installer::GitSubtree.new(definition, moogs_dir)
+  def build_subtree_installer(definition)
+    Mooger::Installer::GitSubtree.new(definition)
   end
 
   private

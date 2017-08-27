@@ -13,7 +13,7 @@ RSpec.describe Mooger::SharedHelpers do
       end
     }
 
-    let(:create_lockfile) { 
+    let(:create_lockfile) { build_lock
       File.open("Moogerfile.lock", "w") do |f|
         f.puts("FAKE LOCKFILE")
       end

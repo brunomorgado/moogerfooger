@@ -44,8 +44,8 @@ module Mooger
       end
 
       def installed_moogs
-        return [] if moogs_dir.nil? 
-         Dir.entries(moogs_dir).select {|entry| File.directory?(moogs_dir)  and !(entry =='.' || entry == '..') }
+        return [] if lockfile.nil? 
+        Mooger.definition.moogs
       end
 
       private

@@ -15,7 +15,7 @@ RSpec.describe Moogerfooger do
     let(:moogs) {[build_moog("moog1", path_for_git_repo(repo_name)), build_moog("moog2", path_for_git_repo(repo_name))]}
     let(:definition) {build_definition(moogs)}
     let(:moogs_dir) {Mooger::SharedHelpers.moogs_dir}
-    let(:subtree_installer) {build_subtree_installer(definition, moogs_dir)}
+    let(:subtree_installer) {build_subtree_installer(definition)}
 
     it "should reset definition" do
       FakeFS.with_fresh do

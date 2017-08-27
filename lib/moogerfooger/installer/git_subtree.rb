@@ -5,9 +5,8 @@ module Mooger
   class Installer
     class GitSubtree
 
-      def initialize(definition, moogs_dir, options = {})
+      def initialize(definition, options = {})
         @definition = definition
-        @moogs_dir = moogs_dir
       end
 
       def run
@@ -34,9 +33,8 @@ module Mooger
       private
 
       def create_moogs_dir_if_needed
-        return unless @moogs_dir.nil?
+        return unless SharedHelpers.moogs_dir.nil?
         Dir.mkdir(SharedHelpers.moogs_dir_path.to_s)
-        @moogs_dir = SharedHelpers.moogs_dir
       end
 
       def ensure_definition_has_moogs
@@ -58,7 +56,7 @@ module Mooger
       end
 
       def subtree_path(remote_name)
-        File.join(@moogs_dir.split.last, remote_name)
+        File.join(SharedHelpers.moogs_dir.split.last, remote_name)
       end
     end
   end
