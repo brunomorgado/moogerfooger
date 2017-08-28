@@ -6,17 +6,25 @@ require 'fakefs/safe'
 RSpec.describe Mooger::SharedHelpers do
 
   describe "file system manipulation" do
-
+    
     let(:create_moogerfile) { 
-      File.open("Moogerfile", "w") do |f|
-        f.puts("FAKE MOOGERFILE")
-      end
+      build_moogerfile <<-G
+          moog 'awesome_moog' do |m|
+            m.repo = "http://awesome_moog.git"
+            m.branch = "master"
+          end
+      G
     }
 
-    let(:create_lockfile) { build_lock
-      File.open("Moogerfile.lock", "w") do |f|
-        f.puts("FAKE LOCKFILE")
-      end
+    let(:create_lockfile) { 
+      build_lockfile <<-G
+    ---
+    awesome_moog:
+      name: awesome_moog
+      repo: git@github.com:brunomorgado/RxErrorTracker.git
+      branch: master
+      tag: 
+      G
     }
 
     let(:create_moogs_dir) {
@@ -121,7 +129,9 @@ RSpec.describe Mooger::SharedHelpers do
     describe "#lockfile" do
 
       it "can be nil" do
-        expect(Mooger::SharedHelpers.lockfile).to be nil
+        FakeFS.with_fresh do
+          expect(Mooger::SharedHelpers.lockfile).to be nil
+        end
       end
 
       it "lockfile should be a file" do
@@ -191,31 +201,33 @@ RSpec.describe Mooger::SharedHelpers do
 
       it "should return an array with the names of the installed moogs" do
         FakeFS.with_fresh do
-          create_moogerfile
-          create_moogs_dir
-          Dir.chdir(Mooger::SharedHelpers.moogs_dir_path) do
-            Dir.mkdir("Moog1")
-            Dir.mkdir("Moog2")
-            Dir.mkdir("Moog3")
-          end
-          expect(Mooger::SharedHelpers.installed_moogs).to eq(["Moog1", "Moog2", "Moog3"])
+          create_lockfile
+          expect(Mooger::SharedHelpers.installed_moogs.map{ |moog| moog.name }).to eq(["awesome_moog"])
         end
       end
 
-      it "should return an empty array if moogs dir does not exist" do
+      it "should return an empty array if lockfile does not exist" do
         FakeFS.with_fresh do
-          create_moogerfile
           expect(Mooger::SharedHelpers.installed_moogs).to eq([])
         end
       end
 
-      it "should return an empty array if there are no installed moogs" do
-        FakeFS.with_fresh do
-          create_moogerfile
-          create_moogs_dir
-          expect(Mooger::SharedHelpers.installed_moogs).to eq([])
-        end
-      end
+      #context "no moogs installed" do
+
+      #let(:create_lockfile) { 
+      #build_lockfile <<-G
+      #---
+      #G
+      #}
+
+      #it "should return an empty array if there are no installed moogs" do
+      #FakeFS.with_fresh do
+      #create_lockfile
+      #expect(Mooger::SharedHelpers.installed_moogs).to eq([])
+      #end
+      #end
+      #end
+
     end
   end
 end
