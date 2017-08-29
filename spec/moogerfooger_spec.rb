@@ -15,7 +15,20 @@ RSpec.describe Moogerfooger do
     let(:moogs) {[build_moog("moog1", path_for_git_repo(repo_name)), build_moog("moog2", path_for_git_repo(repo_name))]}
     let(:definition) {build_definition(moogs)}
     let(:moogs_dir) {Mooger::SharedHelpers.moogs_dir}
-    let(:subtree_installer) {build_subtree_installer(definition)}
+    let(:create_lockfile) { 
+      build_lockfile <<-G
+        ---
+        awesome_moog1:
+          name: awesome_moog1
+          repo: git@github.com:brunomorgado/RxErrorTracker.git
+          branch: master
+        awesome_moog2:
+          name: awesome_moog2
+          repo: git@github.com:brunomorgado/RxErrorTracker.git
+          branch: master
+          G
+    }
+    let(:subtree_installer) {build_subtree_installer(Mooger.definition(true))}
 
     it "should reset definition" do
       FakeFS.with_fresh do
@@ -40,16 +53,15 @@ RSpec.describe Moogerfooger do
 
     it "should delete the moogs dir recursively" do
       FakeFS.with_fresh do
+        create_lockfile
         build_moogerfile
         build_moogs_dir
         Dir.chdir(Mooger::SharedHelpers.moogs_dir_path) do
-          Dir.mkdir("Moog1")
-          Dir.mkdir("Moog2")
-          Dir.mkdir("Moog3")
+          Dir.mkdir("awesome_moog")
         end
-        expect(Mooger::SharedHelpers.installed_moogs).to eq(["Moog1", "Moog2", "Moog3"])
+        expect(Dir.exists?(Mooger::SharedHelpers.moogs_dir_path)).to be true
         Mooger.reset
-        expect(Mooger::SharedHelpers.installed_moogs).to eq([])
+        expect(Dir.exists?(Mooger::SharedHelpers.moogs_dir_path)).to be false
       end
     end
 
@@ -57,12 +69,12 @@ RSpec.describe Moogerfooger do
       create_git_repo(repo_name)
       do_in_repo(repo_name) do
         build_moogerfile
-        build_moogs_dir
-        git("add .")
-        git("commit -m 'Add moogerfile'")
-        subtree_installer.generate
-        expect(Mooger::GitHelpers.remote_exists?("moog1")).to be true
-        expect(Mooger::GitHelpers.remote_exists?("moog2")).to be true
+        create_lockfile
+        git("remote add awesome_moog1 http://url")
+        git("remote add awesome_moog2 http://url")
+        git("remote -v")
+        expect(Mooger::GitHelpers.remote_exists?("awesome_moog1")).to be true
+        expect(Mooger::GitHelpers.remote_exists?("awesome_moog2")).to be true
         expect(Mooger::GitHelpers.remote_exists?("non_existent")).to be false
         # Should generate 2 remotes
         expect(`git remote -v | wc -l`.to_i/2).to eq 2
