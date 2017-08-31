@@ -25,11 +25,19 @@ module Mooger
         system "git remote remove #{remote_name}"
       end
 
+      def pull_remote(path, remote_name, branch)
+        system "git subtree pull --prefix=#{path.to_s} #{remote_name} #{branch}"
+      end
+
       def add_subtree(path, remote_name, branch)
         success = system("git subtree add --prefix=#{path.to_s} #{remote_name} #{branch} --squash")
         unless success
           raise GitSubtreeAddError, "Failed to add subtree to remote with name: #{remote_name}"
         end
+      end
+
+      def subtree_path(remote_name)
+        File.join(SharedHelpers.moogs_dir.split.last, remote_name)
       end
 
       def remove_subtree(path)

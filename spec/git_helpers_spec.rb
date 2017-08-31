@@ -152,4 +152,9 @@ RSpec.describe Mooger::GitHelpers do
       end
     end
   end
+
+  describe "#subtree_path" do
+
+    it "should return the correct path for the subtree"
+  end
 end

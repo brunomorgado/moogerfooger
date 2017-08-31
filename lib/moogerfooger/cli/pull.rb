@@ -8,18 +8,16 @@ module Mooger
     end
 
     def run
-      if @moog.nil?
-        puts "Moog with name: #{@moog_name} not found. Unable to pull."
-        return
-      end
-
-      pull_remote(Mooger.moogs_dir.split().last + @moog.name, @moog.name, @moog.branch)
+      ensure_moog_exists
+      GitHelpers.pull_remote(GitHelpers.subtree_path(@moog.name), @moog.name, @moog.branch)
     end
 
     private
 
-    def pull_remote(path, remote_name, branch)
-      system "git subtree pull --prefix=#{path.to_s} #{remote_name} #{branch}"
+    def ensure_moog_exists
+      if @moog.nil?
+        raise MoogNotFound, "Moog with name: #{@moog_name} not found. Unable to pull."
+      end
     end
   end
 end

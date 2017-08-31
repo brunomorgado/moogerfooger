@@ -21,10 +21,10 @@ module Mooger
           check_if_remote_exists(moog.name)
           begin
             GitHelpers.add_remote(moog.name, moog.repo)
-            GitHelpers.add_subtree(subtree_path(moog.name), moog.name, moog.branch)
+            GitHelpers.add_subtree(GitHelpers.subtree_path(moog.name), moog.name, moog.branch)
           rescue => e
             GitHelpers.remove_remote(moog.name)
-            GitHelpers.remove_subtree(subtree_path(moog.name))
+            GitHelpers.remove_subtree(GitHelpers.subtree_path(moog.name))
             raise e
           end
         end
@@ -53,10 +53,6 @@ module Mooger
         if GitHelpers.remote_exists?(remote_name)
           raise GitRemoteExistsError, "There is already a remote called #{remote_name}. Cannot continue."
         end
-      end
-
-      def subtree_path(remote_name)
-        File.join(SharedHelpers.moogs_dir.split.last, remote_name)
       end
     end
   end

@@ -27,4 +27,5 @@ module Mooger
   class GitRemoteAddError < MoogerError; status_code(8); end
   class GitSubtreeAddError < MoogerError; status_code(9); end
   class DefinitionHasNoMoogsError < MoogerError; status_code(10); end
+  class MoogNotFound < MoogerError; status_code(11); end
 end
