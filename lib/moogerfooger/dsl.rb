@@ -9,48 +9,63 @@ module Mooger
 			builder = new
 			builder.eval_moogerfile(moogerfile)
       builder
-		end
+    end
 
-		def initialize
-			@moogs = []
-			@moogerfile = nil
-		end
+    def initialize
+      @moogs = []
+      @moogerfile = nil
+    end
 
-		def eval_moogerfile(moogerfile, contents = nil)
-			@moogerfile = moogerfile
+    def eval_moogerfile(moogerfile)
+      @moogerfile = moogerfile
       contents ||= File.read(@moogerfile)
-			instance_eval(contents.dup.untaint, moogerfile.to_s, 1)
-		rescue Exception => e
-			message = "There was an error " \
-				"#{e.is_a?(Mooger::MoogerfileEvalError) ? "evaluating" : "parsing"} " \
-				"`#{File.basename moogerfile.to_s}`: #{e.message}"
+      instance_eval(contents.dup.untaint, moogerfile.to_s, 1)
+    rescue Exception => e
+      message = "There was an error parsing " \
+        "`#{File.basename moogerfile.to_s}`: #{e.message}"
 
-			raise DSLError.new(message, moogerfile, e.backtrace, contents)
-		ensure
-			@moogerfile = moogerfile
-		end
+      raise DSLError.new(message, moogerfile, e.backtrace, contents)
+    end
 
     def to_definition()
       Definition.new(@moogs)
     end
 
     def moog(name, &block)
-      raise InvalidOption, "You need to pass a config block to #moog" if !block_given?
-
-      ensure_no_duplicate_moogs name
+      raise MoogerfileError, "You need to pass a config block to #moog" if !block_given?
+      validate_moog_name(name)
       moog = Moog.new(name)
       yield(moog)
+      validate_moog_def(moog)
       @moogs << moog
     end
 
     private
 
-    def ensure_block_given(block)
+    def validate_moog_name(name)
+      if name.is_a?(Symbol)
+        raise MoogerfileError, %(You need to specify moog names as Strings. Use 'moog "#{name}"' instead)
+      end
+      if name =~ /\s/
+        raise MoogerfileError, %('#{name}' is not a valid moog name because it contains whitespace)
+      end
+      if name.empty?
+        raise MoogerfileError, %(an empty moog name is not valid)
+      end
+      if @moogs.any?{|m| m.name == name}
+        raise MoogerfileError, %(You specified: #{name} multiple times)
+      end
     end
 
-    def ensure_no_duplicate_moogs(name)
-      unless !@moogs.any?{|m| m.name == name}
-        raise MoogerfileError, "You specified: #{name} multiple times"
+    def validate_moog_def(moog)
+      if moog.repo.nil?
+        raise MoogerfileError, %(You must specify a valid git repo)
+      end
+      if moog.branch.nil? && moog.tag.nil?
+        raise MoogerfileError, %(You must specify either a branch or a tag)
+      end
+      if !moog.branch.nil? && !moog.tag.nil?
+        raise MoogerfileError, %(You can't specify both the branch and the tag)
       end
     end
 
