@@ -1,4 +1,4 @@
-moog 'SILabsLib' do |m|
+moog 'some_moog' do |m|
   m.repo = "git@github.com:brunomorgado/RxErrorTracker.git"
   m.branch = "master"
 end

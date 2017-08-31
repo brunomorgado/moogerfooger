@@ -31,6 +31,7 @@ module Mooger
      hash["repo"] = @repo
      hash["branch"] = @branch
      hash["tag"] = @tag
+     hash.delete_if {|k, v| v.nil?}
      hash
    end
 
@@ -38,6 +39,5 @@ module Mooger
      definition = Mooger.definition
      definition.moogs.select { |moog| moog.name == moog_name }.first
    end
-
   end
 end
