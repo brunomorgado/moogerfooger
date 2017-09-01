@@ -3,6 +3,10 @@ module Mooger
 
     class << self 
 
+      def is_git_repo?
+        Dir.exists?(File.join(SharedHelpers.root, ".git"))
+      end
+
       def repo_has_changes?
         has_staged_changes = !system("git diff --quiet --exit-code")
         has_unstaged_changes = !system("git diff --cached --quiet --exit-code")
@@ -43,14 +47,6 @@ module Mooger
       def remove_subtree(path)
         return unless Dir.exists?(path)
         system "rm -rf #{path}"
-      end
-
-      def gitignore_path
-        unless Dir.exists?(File.join(SharedHelpers.root, ".git")) 
-          raise NotAGitRepoError, "It seems that you're not in a git repo. Moogerfooger cannot continue"
-        end
-        gitignore_path = File.join(SharedHelpers.root, ".gitignore")
-        Pathname.new(gitignore_path).untaint.expand_path
       end
     end
   end
