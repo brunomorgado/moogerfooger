@@ -4,6 +4,12 @@ require 'moogerfooger'
 module Mooger
 	class CLI < Thor
 
+    desc "init [OPTIONS]", "Initializes the Moogerfooger environment"
+    def init
+      require "moogerfooger/cli/init"
+      Init.new(options).run
+    end
+
     desc "install [OPTIONS]", "Install the modules according to the Moogerfile specs"
     def install
       require "moogerfooger/cli/install"
