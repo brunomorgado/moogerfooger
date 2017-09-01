@@ -44,6 +44,14 @@ module Mooger
         return unless Dir.exists?(path)
         system "rm -rf #{path}"
       end
+
+      def gitignore_path
+        unless Dir.exists?(File.join(SharedHelpers.root, ".git")) 
+          raise NotAGitRepoError, "It seems that you're not in a git repo. Moogerfooger cannot continue"
+        end
+        gitignore_path = File.join(SharedHelpers.root, ".gitignore")
+        Pathname.new(gitignore_path).untaint.expand_path
+      end
     end
   end
 end

@@ -114,6 +114,10 @@ RSpec.describe Mooger::GitHelpers do
     end
   end
 
+  describe "#pull_remote" do
+
+    it "should pull the latest changes to the current repo"
+  end
 
   describe "#add_subtree" do
 
@@ -142,7 +146,7 @@ RSpec.describe Mooger::GitHelpers do
       create_git_repo(repo_name)
     end
 
-    it "should raise GitSubtreeAddError if there are uncommited files" do
+    it "should remove the folder corresponding to the removed subtree" do
       do_in_repo(repo_name) do
         add_valid_remote
         add_subtree
@@ -156,5 +160,23 @@ RSpec.describe Mooger::GitHelpers do
   describe "#subtree_path" do
 
     it "should return the correct path for the subtree"
+  end
+
+  describe "#gitignore_path" do
+
+    it "should raise NotAGitRepoError if we're not in a git repo" do
+      FakeFS.with_fresh do
+        build_moogerfile
+        expect{Mooger::GitHelpers.gitignore_path}.to raise_error(Mooger::NotAGitRepoError)
+      end
+    end
+
+    it "should return the path of the root appended with .gitignore" do
+      create_git_repo(repo_name)
+      do_in_repo(repo_name) do
+        build_moogerfile
+        expect(Mooger::GitHelpers.gitignore_path.to_s).to eq(Pathname.new(File.join(Mooger::SharedHelpers.root, ".gitignore")).to_s)
+      end
+    end
   end
 end
