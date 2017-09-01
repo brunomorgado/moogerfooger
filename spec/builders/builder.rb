@@ -17,6 +17,13 @@ module Builder
     end
   end
 
+  def build_gitignore(*args)
+    str  = args.shift || ""
+    File.open(".gitignore", "w") do |f|
+      f.puts strip_whitespace(str)
+    end
+  end
+
   def build_moogs_dir
     Dir.mkdir(Mooger::SharedHelpers.moogs_dir_path.to_s)
   end

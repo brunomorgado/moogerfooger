@@ -17,6 +17,23 @@ RSpec.describe Mooger::GitHelpers do
     remote_name
   end
 
+  describe "#is_git_repo?" do
+    it "should return true if .git folder exists in the root" do
+      create_git_repo(repo_name)
+      do_in_repo(repo_name) do
+        build_moogerfile
+        expect(Mooger::GitHelpers.is_git_repo?).to be true
+      end
+    end
+
+    it "should return false if .git does not folder exist in the root" do
+      FakeFS.with_fresh do
+        build_moogerfile
+        expect(Mooger::GitHelpers.is_git_repo?).to be false
+      end
+    end
+  end
+
   describe "#remote_exists?" do
 
     it "should return true if remote exists" do
@@ -160,23 +177,5 @@ RSpec.describe Mooger::GitHelpers do
   describe "#subtree_path" do
 
     it "should return the correct path for the subtree"
-  end
-
-  describe "#gitignore_path" do
-
-    it "should raise NotAGitRepoError if we're not in a git repo" do
-      FakeFS.with_fresh do
-        build_moogerfile
-        expect{Mooger::GitHelpers.gitignore_path}.to raise_error(Mooger::NotAGitRepoError)
-      end
-    end
-
-    it "should return the path of the root appended with .gitignore" do
-      create_git_repo(repo_name)
-      do_in_repo(repo_name) do
-        build_moogerfile
-        expect(Mooger::GitHelpers.gitignore_path.to_s).to eq(Pathname.new(File.join(Mooger::SharedHelpers.root, ".gitignore")).to_s)
-      end
-    end
   end
 end
