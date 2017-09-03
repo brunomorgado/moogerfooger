@@ -55,7 +55,7 @@ module GitHelpers
     ENV['GIT_COMMITTER_EMAIL'] = 'morgado_test@test.com'
     ENV['GIT_COMMITTER_DATE']  = time
 
-    system "git #{command}"
+    `git #{command}`
   ensure
     ENV.replace(original_env.to_hash)
   end

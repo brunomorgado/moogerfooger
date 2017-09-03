@@ -26,7 +26,9 @@ module Mooger
   class GitRepoHasChangesError < MoogerError; status_code(7); end
   class GitRemoteAddError < MoogerError; status_code(8); end
   class GitSubtreeAddError < MoogerError; status_code(9); end
-  class NotAGitRepoError < MoogerError; status_code(10); end
-  class DefinitionHasNoMoogsError < MoogerError; status_code(11); end
-  class MoogNotFound < MoogerError; status_code(12); end
+  class GitCheckoutBranchError < MoogerError; status_code(10); end
+  class NotAGitRepoError < MoogerError; status_code(11); end
+  class DefinitionIsNilError < MoogerError; status_code(13); end
+  class DefinitionHasNoMoogsError < MoogerError; status_code(14); end
+  class MoogNotFound < MoogerError; status_code(15); end
 end

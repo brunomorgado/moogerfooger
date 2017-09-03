@@ -34,6 +34,74 @@ RSpec.describe Mooger::GitHelpers do
     end
   end
 
+  describe "#current_branch" do
+    it "should return the correct name of the current branch" do
+      create_git_repo(repo_name)
+      do_in_repo(repo_name) do
+        expect(Mooger::GitHelpers.current_branch).to eq "master"
+      end
+    end
+  end
+
+  describe "#branch_exists?" do
+    it "should return true if specified branch exists" do
+      create_git_repo(repo_name)
+      do_in_repo(repo_name) do
+        sut_branch_name = "sut_branch"
+        git("checkout -b #{sut_branch_name}")
+        expect(Mooger::GitHelpers.branch_exists?(sut_branch_name)).to be true
+      end
+    end
+
+    it "should return false if specified branch does not exist" do
+      create_git_repo(repo_name)
+      do_in_repo(repo_name) do
+        expect(Mooger::GitHelpers.branch_exists?("nonexistent_sut_branch")).to be false
+      end
+    end
+
+    it "should return false if no branch specified" do
+      create_git_repo(repo_name)
+      do_in_repo(repo_name) do
+        expect(Mooger::GitHelpers.branch_exists?(nil)).to be false
+      end
+    end
+  end
+
+  describe "#checkout_new_branch" do
+    it "should raise GitCheckoutBranchError if branch name is nil" do
+      create_git_repo(repo_name)
+      do_in_repo(repo_name) do
+        expect{Mooger::GitHelpers.checkout_new_branch(nil)}.to raise_error(Mooger::GitCheckoutBranchError)
+      end
+    end
+
+    it "should switch to the specified branch" do
+      create_git_repo(repo_name)
+      do_in_repo(repo_name) do
+        expect(Mooger::GitHelpers.current_branch).to eq "master"
+        Mooger::GitHelpers.checkout_new_branch("new_branch")
+        expect(Mooger::GitHelpers.current_branch).to eq "moogerfooger_tmp_new_branch"
+      end
+    end
+
+    it "should switch to a new random branch when name not specified" do
+      create_git_repo(repo_name)
+      do_in_repo(repo_name) do
+        expect(Mooger::GitHelpers.current_branch).to eq "master"
+        Mooger::GitHelpers.checkout_new_branch
+        expect(Mooger::GitHelpers.current_branch).to include("moogerfooger_tmp")
+      end
+    end
+
+    it "should return the name of the created branch" do
+      create_git_repo(repo_name)
+      do_in_repo(repo_name) do
+        expect(Mooger::GitHelpers.checkout_new_branch("new_branch")).to eq "moogerfooger_tmp_new_branch"
+      end
+    end
+  end
+
   describe "#remote_exists?" do
 
     it "should return true if remote exists" do

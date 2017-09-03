@@ -1,3 +1,5 @@
+require 'securerandom'
+
 module Mooger
   module GitHelpers
 
@@ -11,6 +13,24 @@ module Mooger
         has_staged_changes = !system("git diff --quiet --exit-code")
         has_unstaged_changes = !system("git diff --cached --quiet --exit-code")
         has_unstaged_changes || has_staged_changes
+      end
+
+      def current_branch
+        branch_name = `git rev-parse --abbrev-ref HEAD`
+        branch_name.strip
+      end
+
+      def branch_exists?(branch_name)
+        return false unless branch_name
+        system "git rev-parse --verify #{branch_name}"
+      end
+
+      def checkout_new_branch(name=SecureRandom.hex(4))
+        unless name
+          raise GitCheckoutBranchError, "Cannot checkout unspecified branch."
+        end
+        system "git checkout -b moogerfooger_tmp_#{name} --quiet"
+        current_branch
       end
 
       def remote_exists?(remote_name)
