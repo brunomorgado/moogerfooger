@@ -12,7 +12,6 @@ module Mooger
       def run
         ensure_definition_exists
         ensure_definition_has_moogs
-        create_moogs_dir_if_needed
         generate
       end
 
@@ -32,11 +31,6 @@ module Mooger
       end
 
       private
-
-      def create_moogs_dir_if_needed
-        return unless SharedHelpers.moogs_dir.nil?
-        Dir.mkdir(SharedHelpers.moogs_dir_path.to_s)
-      end
 
       def ensure_definition_exists
         if @definition.nil?

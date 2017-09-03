@@ -14,27 +14,6 @@ RSpec.describe Mooger::Installer::GitSubtree do
   describe "#run" do
 
     context "definition has moogs" do
-      it "should create the moogs_dir if not present" do
-        FakeFS.with_fresh do
-          build_moogerfile
-          allow(subtree_installer).to receive(:generate)
-          expect(Dir.exists?(Mooger::SharedHelpers.moogs_dir_path)).to be false
-          subtree_installer.run
-          expect(Dir.exists?(Mooger::SharedHelpers.moogs_dir_path)).to be true
-        end
-      end
-
-      it "should not fail if moogs_dir is already present" do
-        FakeFS.with_fresh do
-          build_moogerfile
-          build_moogs_dir
-          allow(subtree_installer).to receive(:generate)
-          expect(Dir.exists?(Mooger::SharedHelpers.moogs_dir_path)).to be true
-          subtree_installer.run
-          expect(Dir.exists?(Mooger::SharedHelpers.moogs_dir_path)).to be true
-        end
-      end
-
       it "should invoke generate method" do
         FakeFS.with_fresh do
           build_moogerfile
@@ -55,16 +34,6 @@ RSpec.describe Mooger::Installer::GitSubtree do
           build_moogerfile
           allow(subtree_installer).to receive(:generate)
           expect {subtree_installer.run}.to raise_error(Mooger::DefinitionHasNoMoogsError)
-        end
-      end
-
-      it "should not create the moogs_dir" do
-        FakeFS.with_fresh do
-          build_moogerfile
-          allow(subtree_installer).to receive(:generate)
-          expect(Dir.exists?(Mooger::SharedHelpers.moogs_dir_path)).to be false
-          expect {subtree_installer.run}.to raise_error(Mooger::DefinitionHasNoMoogsError)
-          expect(Dir.exists?(Mooger::SharedHelpers.moogs_dir_path)).to be false
         end
       end
 

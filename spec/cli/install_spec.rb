@@ -24,86 +24,99 @@ RSpec.describe Mooger::CLI::Install do
 
     context "definition has moogs and is valid" do
 
+      it "should not raise any error" do
+        create_git_repo(repo_name)
+        do_in_repo(repo_name) do
+          create_moogerfile  
+          expect {Mooger::CLI::Install.new.run}.not_to raise_error
+        end
+      end
+
+      it "should install the moogs specified on the Moogerfile" do
+        create_git_repo(repo_name)
+        do_in_repo(repo_name) do
+          create_moogerfile
+          Mooger::CLI::Install.new.run
+          expect(Mooger.definition.moogs.count).to be 1
+          expect(Mooger.definition.moogs[0].name).to eq("awesome_moog") 
+        end
+      end
+
+      it "should finish at the original branch" do
+        create_git_repo(repo_name)
+        do_in_repo(repo_name) do
+          create_moogerfile  
+          original_branch = Mooger::GitHelpers.current_branch
+          expect(original_branch).to eq("master")
+          Mooger::CLI::Install.new.run
+          expect(Mooger::GitHelpers.current_branch).to eq(original_branch)
+        end
+      end
+
+      it "should cleanup temp branches" do
+        create_git_repo(repo_name)
+        do_in_repo(repo_name) do
+          create_moogerfile  
+          branch_count = git("branch | wc -l").strip.to_i
+          expect(branch_count).to eq(1)
+          Mooger::CLI::Install.new.run
+          updated_branch_count = git("branch | wc -l").strip.to_i
+          expect(branch_count).to eq(updated_branch_count)
+        end
+      end
+
+      it "should end up with clean working tree" do
+        create_git_repo(repo_name)
+        do_in_repo(repo_name) do
+          create_moogerfile  
+          Mooger::CLI::Install.new.run
+          expect(Mooger::GitHelpers.repo_has_changes?).to be false
+        end
+      end
+
+      it "should change git history" do
+        create_git_repo(repo_name)
+        do_in_repo(repo_name) do
+          create_moogerfile  
+          original_rev = git("rev-parse HEAD")
+          Mooger::CLI::Install.new.run
+          final_rev = git("rev-parse HEAD")
+          expect(original_rev).to_not eq(final_rev)
+        end
+      end
+
       context "First install" do
-        it "should invoke definition method on Mooger with args true" do
+        it "should create the moogs_dir" do
           create_git_repo(repo_name)
           do_in_repo(repo_name) do
             create_moogerfile
-            allow(Mooger).to receive(:definition)
-            expect(Mooger).to receive(:definition).with(true)
+            expect(Dir.exists?(Mooger::SharedHelpers.moogs_dir_path)).to be false
             Mooger::CLI::Install.new.run
+            expect(Dir.exists?(Mooger::SharedHelpers.moogs_dir_path)).to be true
           end
         end
 
-        it "should invoke reset method on Mooger" do
+        it "should create the lockfile" do
           create_git_repo(repo_name)
           do_in_repo(repo_name) do
-            create_moogerfile  
-            allow(Mooger).to receive(:reset)
-            expect(Mooger).to receive(:reset).once
+            create_moogerfile
+            expect(File.exist?(Mooger::SharedHelpers.lockfile_path)).to be false
             Mooger::CLI::Install.new.run
-          end
-        end
-
-        it "should not raise any error" do
-          create_git_repo(repo_name)
-          do_in_repo(repo_name) do
-            create_moogerfile  
-            expect {Mooger::CLI::Install.new.run}.not_to raise_error
+            expect(File.exist?(Mooger::SharedHelpers.lockfile_path)).to be true
           end
         end
       end
 
       context "Subsquent install" do
 
-        let(:create_updated_moogerfile) { 
-          build_moogerfile <<-G
-          moog 'awesome_moog_2' do |m|
-            m.repo = "#{path_for_git_repo(repo_name)}"
-            m.branch = "master"
-          end
-          G
-        }
-
-        it "should update the " do
+        it "should not fail if moogs_dir is already present" do
           create_git_repo(repo_name)
           do_in_repo(repo_name) do
             create_moogerfile
-            create_lockfile
             build_moogs_dir
-            git("add .")
-            git("commit -m 'cleanup'")
-            #allow(Mooger).to receive(:definition)
-            #expect(Mooger).to receive(:definition).with(true)
-            expect {Mooger::CLI::Install.new.run}.not_to raise_error
-          end
-        end
-
-        it "should invoke definition method on Mooger with args true" do
-          create_git_repo(repo_name)
-          do_in_repo(repo_name) do
-            create_moogerfile
-            create_lockfile
-            build_moogs_dir
-            git("add .")
-            git("commit -m 'cleanup'")
-            #allow(Mooger).to receive(:definition)
-            #expect(Mooger).to receive(:definition).with(true)
-            expect {Mooger::CLI::Install.new.run}.not_to raise_error
-          end
-        end
-
-        it "should invoke reset method on Mooger" do
-          create_git_repo(repo_name)
-          do_in_repo(repo_name) do
-            create_moogerfile  
-            build_lockfile
-            build_moogs_dir
-            git("add .")
-            git("commit -m 'cleanup'")
-            allow(Mooger).to receive(:reset)
-            expect(Mooger).to receive(:reset).once
+            expect(Dir.exists?(Mooger::SharedHelpers.moogs_dir_path)).to be true
             Mooger::CLI::Install.new.run
+            expect(Dir.exists?(Mooger::SharedHelpers.moogs_dir_path)).to be true
           end
         end
 
@@ -111,10 +124,7 @@ RSpec.describe Mooger::CLI::Install do
           create_git_repo(repo_name)
           do_in_repo(repo_name) do
             create_moogerfile  
-            build_lockfile
-            build_moogs_dir
-            git("add .")
-            git("commit -m 'cleanup'")
+            Mooger::CLI::Install.new.run
             expect {Mooger::CLI::Install.new.run}.not_to raise_error
           end
         end

@@ -9,7 +9,6 @@ module Mooger
 
       def run
         begin
-          puts "BEGIN"
           # Get a reference of the current branch's name
           original_branch = GitHelpers.current_branch
           # Ensure that the working tree is clean
@@ -26,15 +25,12 @@ module Mooger
           installer = Mooger::Installer::GitSubtree.new(definition, @options)
           installer.run
         rescue => e
-          puts "RESCUE"
           puts e
         else
-          puts "ELSE"
           # Merge changes
           system "git checkout #{original_branch} --quiet"
           system "git merge #{tmp_branch} --quiet"
         ensure
-          puts "ENSURE"
           # Checkout original branch
           system "git checkout #{original_branch} --quiet" unless original_branch == GitHelpers.current_branch
           # Remove temp branch
