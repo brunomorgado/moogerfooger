@@ -204,6 +204,44 @@ RSpec.describe Mooger::GitHelpers do
     it "should pull the latest changes to the current repo"
   end
 
+  describe "#push_remote" do
+    let(:repo_name_2) {"repo_#{SecureRandom.hex(5)}"}
+    let(:remote_url_2) {"#{path_for_git_repo(repo_name_2)}"}
+    let(:remote_name_2) {"remote_#{SecureRandom.hex(5)}"}
+    let(:add_remote_2) {Mooger::GitHelpers.add_remote(remote_name_2, remote_url_2)}
+    let(:create_moogerfile) { 
+      build_moogerfile <<-G
+          moog 'awesome_moog' do |m|
+            m.repo = "#{path_for_git_repo(repo_name)}"
+            m.branch = "master"
+          end
+      G
+    }
+    it "should push the changes made remote's folder to the remote's repo" do
+      create_git_repo(repo_name)
+      create_git_repo(repo_name_2)
+      do_in_repo(repo_name_2) do
+        create_moogerfile
+        git("add .")
+        git("commit -m 'cleanup'")
+        Mooger::CLI::Install.new.run
+        expect(File.exist?("created_file.txt")).to be false
+      end
+      do_in_repo(repo_name) do
+        create_moogerfile
+        system "touch created_file.txt"
+        git("add .")
+        git("commit -m 'cleanup'")
+        Mooger::CLI::Install.new.run
+        expect(File.exist?("created_file.txt")).to be true
+        Mooger::GitHelpers.push_remote(Mooger::GitHelpers.subtree_path(awesome_moog), @moog.name, @moog.branch)
+      end
+      do_in_repo(repo_name_2) do
+        expect(File.exist?("created_file.txt")).to be true
+      end
+    end
+  end
+
   describe "#add_subtree" do
 
     let(:add_subtree) {Mooger::GitHelpers.add_subtree(remote_name, remote_name, "master")}

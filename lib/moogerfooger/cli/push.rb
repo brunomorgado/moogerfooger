@@ -1,7 +1,7 @@
 require "moogerfooger/git_helpers"
 
 module Mooger
-  class CLI::Pull
+  class CLI::Push
 
     def initialize(options, moog_name)
       @options = options
@@ -11,7 +11,7 @@ module Mooger
 
     def run
       ensure_moog_exists
-      GitHelpers.pull_remote(GitHelpers.subtree_path(@moog.name), @moog.name, @moog.branch)
+      GitHelpers.push_remote(GitHelpers.subtree_path(@moog.name), @moog.name, @moog.branch)
     end
 
     private
