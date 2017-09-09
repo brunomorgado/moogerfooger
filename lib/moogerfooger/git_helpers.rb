@@ -50,10 +50,17 @@ module Mooger
       end
 
       def add_subtree(path, remote_name, branch)
-        success = system("git subtree add --prefix=#{path.to_s} #{remote_name} #{branch} --squash")
+        success = system("git fetch #{remote_name}")
+        success = success && system("git read-tree --prefix=#{path.to_s} -u #{remote_name}/#{branch}")
         unless success
           raise GitSubtreeAddError, "Failed to add subtree to remote with name: #{remote_name}"
         end
+      end
+
+      def remove_dir(path)
+        return unless Dir.exists?(path)
+        system "git rm -r --cached #{path}"
+        system "rm -rf #{path}"
       end
 
       def pull_remote(path, remote_name, branch)
@@ -66,11 +73,6 @@ module Mooger
 
       def subtree_path(remote_name)
         File.join(SharedHelpers.moogs_dir.split.last, remote_name)
-      end
-
-      def remove_subtree(path)
-        return unless Dir.exists?(path)
-        system "rm -rf #{path}"
       end
     end
   end

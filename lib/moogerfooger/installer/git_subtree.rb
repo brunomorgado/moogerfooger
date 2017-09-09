@@ -16,7 +16,7 @@ module Mooger
       end
 
       def generate
-        ensure_clean
+        #ensure_clean
         @definition.moogs.each do |moog|
           check_if_remote_exists(moog.name)
           begin
@@ -24,7 +24,7 @@ module Mooger
             GitHelpers.add_subtree(GitHelpers.subtree_path(moog.name), moog.name, moog.branch)
           rescue => e
             GitHelpers.remove_remote(moog.name)
-            GitHelpers.remove_subtree(GitHelpers.subtree_path(moog.name))
+            GitHelpers.remove_dir(GitHelpers.subtree_path(moog.name))
             raise e
           end
         end

@@ -12,6 +12,9 @@ module Mooger
     def self.build
       unless Mooger.locked?
         definition = Dsl.evaluate(SharedHelpers.moogerfile).to_definition
+        # Interrupt if there are no Moogs defined
+        return definition if definition.moogs.nil? || definition.moogs.empty?
+        # Generate lockfile
         Generator::LockfileGenerator.generate(definition)
       end
       definition = Parser::LockfileParser.parse(SharedHelpers.lockfile).to_definition
