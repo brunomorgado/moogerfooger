@@ -18,6 +18,7 @@ module Mooger
         stage_lockfile
         # Interrupt if there are no Moogs defined
         if definition.moogs.nil? || definition.moogs.empty?
+          #TODO: Warning
           return 
         end
         # Regenerate the Moogs dir
@@ -43,6 +44,7 @@ module Mooger
     def create_moogs_dir_if_needed
       return unless SharedHelpers.moogs_dir.nil?
       Dir.mkdir(SharedHelpers.moogs_dir_path.to_s)
+      system "git add #{SharedHelpers.moogs_dir_path.to_s}"
     end
 
     def stage_lockfile

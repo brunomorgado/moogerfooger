@@ -63,6 +63,12 @@ module Mooger
         system "rm -rf #{path}"
       end
 
+      def remove_file(path)
+        return unless File.exists?(path)
+        system "git rm --cached #{path}"
+        system "rm -f #{path}"
+      end
+
       def pull_remote(path, remote_name, branch)
         system "git subtree pull --prefix=#{path.to_s} #{remote_name} #{branch}"
       end
