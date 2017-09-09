@@ -14,22 +14,20 @@ module Mooger
         # Get a reference to the definition.
         # Passing True will unlock the Moogerfile and regenerate the lockfile
         definition = Mooger.definition(true)
-        # Stage recently generated lockfile
-        stage_lockfile
-        # Interrupt if there are no Moogs defined
-        if definition.moogs.nil? || definition.moogs.empty?
-          #TODO: Warning
-          return 
-        end
-        # Regenerate the Moogs dir
+        # Ensure definition has moogs
+        ensure_definition_has_moogs(definition)
+        # Create the Moogs dir
         create_moogs_dir_if_needed
         # Proceed with subtrees installation
         installer = Mooger::Installer::GitSubtree.new(definition, @options)
         installer.run
+      rescue DefinitionHasNoMoogsError => e
+        #TODO: Warning
       rescue => e
         puts e
       else
       ensure
+        stage_generated_files
       end
     end
 
@@ -41,14 +39,20 @@ module Mooger
       end
     end
 
+    def ensure_definition_has_moogs definition
+      if definition.moogs.nil? || definition.moogs.empty?
+        raise DefinitionHasNoMoogsError
+      end
+    end
+
     def create_moogs_dir_if_needed
       return unless SharedHelpers.moogs_dir.nil?
       Dir.mkdir(SharedHelpers.moogs_dir_path.to_s)
-      system "git add #{SharedHelpers.moogs_dir_path.to_s}"
     end
 
-    def stage_lockfile
-      system "git add #{Mooger::SharedHelpers.lockfile_path}" if File.exist?(Mooger::SharedHelpers.lockfile_path)
+    def stage_generated_files
+      system "git add #{SharedHelpers.moogs_dir_path.to_s}"
+      system "git add #{Mooger::SharedHelpers.lockfile_path}"
     end
   end
 end
