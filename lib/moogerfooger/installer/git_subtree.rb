@@ -11,7 +11,7 @@ module Mooger
 
       def run
         ensure_definition_exists
-        ensure_definition_has_moogs
+        warn_if_no_moogs
         generate
       end
 
@@ -38,9 +38,10 @@ module Mooger
         end
       end
 
-      def ensure_definition_has_moogs
+      def warn_if_no_moogs
         if @definition.moogs.empty?
-          raise DefinitionHasNoMoogsError, "The definition has no moogs. Cannot continue"
+          #TODO: Warning
+          #raise DefinitionHasNoMoogsError, "The definition has no moogs. Cannot continue"
         end
       end
 

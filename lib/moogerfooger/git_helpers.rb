@@ -38,7 +38,7 @@ module Mooger
       end
 
       def add_remote(remote_name, remote_url)
-        success = system("git remote add -f #{remote_name} #{remote_url}")
+        success = system("git remote add --no-tags -f #{remote_name} #{remote_url}")
         unless success 
           raise GitRemoteAddError, "Failed to add remote with name: #{remote_name} and url: #{remote_url}"
         end

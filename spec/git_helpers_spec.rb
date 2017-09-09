@@ -205,57 +205,58 @@ RSpec.describe Mooger::GitHelpers do
     it "should pull the latest changes to the current repo"
   end
 
-  #describe "#push_remote" do
-    #let(:moog_repo_name) {"repo_#{SecureRandom.hex(5)}"}
-    #let(:moog_repo_remote_url) {"#{path_for_git_repo(moog_repo_name)}"}
+  describe "#push_remote" do
+    let(:moog_repo_name) {"repo_#{SecureRandom.hex(5)}"}
+    let(:moog_repo_remote_url) {"#{path_for_git_repo(moog_repo_name)}"}
 
-    #let(:consumer_repo_name) {"repo_#{SecureRandom.hex(5)}"}
-    #let(:consumer_repo_remote_url) {"#{path_for_git_repo(consumer_repo_name)}"}
-    #let(:create_moogerfile) { 
-      #build_moogerfile <<-G
-          #moog 'awesome_moog' do |m|
-            #m.repo = "#{path_for_git_repo(moog_repo_name)}"
-            #m.branch = "master"
-          #end
-      #G
-    #}
-    #it "should push the changes made in the remote's folder to the remote's repo" do
-      #create_git_repo(moog_repo_name)
-      #create_git_repo(consumer_repo_name)
+    let(:consumer_repo_name) {"repo_#{SecureRandom.hex(5)}"}
+    let(:consumer_repo_remote_url) {"#{path_for_git_repo(consumer_repo_name)}"}
+    let(:create_moogerfile) { 
+      build_moogerfile <<-G
+          moog 'awesome_moog' do |m|
+            m.repo = "#{path_for_git_repo(moog_repo_name)}"
+            m.branch = "master"
+          end
+      G
+    }
+    it "should push the changes made in the remote's folder to the remote's repo" do
+      create_git_repo(moog_repo_name)
+      create_git_repo(consumer_repo_name)
 
-      ##do_in_repo(consumer_repo_remote_name) do
-      ##create_moogerfile
-      ##git("add .")
-      ##git("commit -m 'cleanup'")
-      ##Mooger::CLI::Install.new.run
-      ##expect(File.exist?("new_file.txt")).to be false
-      ##end
+      #do_in_repo(consumer_repo_remote_name) do
+      #create_moogerfile
+      #git("add .")
+      #git("commit -m 'cleanup'")
+      #Mooger::CLI::Install.new.run
+      #expect(File.exist?("new_file.txt")).to be false
+      #end
 
-      #do_in_repo(consumer_repo_name) do
-        #create_moogerfile
-        #Mooger::CLI::Install.new.run
+      do_in_repo(consumer_repo_name) do
+        create_moogerfile
+        Mooger::CLI::Install.new.run
+          git("config --bool core.bare true")
 
-        #Dir.chdir("Moogs/awesome_moog/") do
-          #File.open("new_file.txt", "w") do |f|
-            #f.puts("DUMMY FILE")
-          #end
-        #git("status")
-        #end
+        Dir.chdir("Moogs/awesome_moog/") do
+          File.open("new_file.txt", "w") do |f|
+            f.puts("DUMMY FILE")
+          end
+        git("status")
+        end
 
 
-          #git("add Moogs/awesome_moog/new_file.txt")
-          #git("commit -m 'Add new file'")
+          git("add Moogs/awesome_moog/new_file.txt")
+          git("commit -m 'Add new file'")
 
-        #git("status")
+        git("status")
+        expect(File.exist?("Moogs/awesome_moog/new_file.txt")).to be true
+        Mooger::GitHelpers.push_remote(Mooger::GitHelpers.subtree_path("awesome_moog"), "awesome_moog", "master")
+      end
+
+      do_in_repo(moog_repo_name) do
         #expect(File.exist?("Moogs/awesome_moog/new_file.txt")).to be true
-        #Mooger::GitHelpers.push_remote(Mooger::GitHelpers.subtree_path("awesome_moog"), "awesome_moog", "master")
-      #end
-
-      #do_in_repo(moog_repo_name) do
-        ##expect(File.exist?("Moogs/awesome_moog/new_file.txt")).to be true
-      #end
-    #end
-  #end
+      end
+    end
+  end
 
   describe "#add_subtree" do
 

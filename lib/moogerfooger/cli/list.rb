@@ -11,6 +11,5 @@ module Mooger
           puts moog.name
         end
       end
-
     end
 end

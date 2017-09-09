@@ -134,6 +134,23 @@ RSpec.describe Mooger::CLI::Install do
     context "definition has no moogs" do
       let(:create_moogerfile) { build_moogerfile }
 
+      it "should not raise any error" do
+        create_git_repo(repo_name)
+        do_in_repo(repo_name) do
+          create_moogerfile  
+          expect {Mooger::CLI::Install.new.run}.not_to raise_error
+        end
+      end
+
+      it "should uninstall all the moogs" do
+        create_git_repo(repo_name)
+        do_in_repo(repo_name) do
+          create_moogerfile
+          Mooger::CLI::Install.new.run
+          expect(Mooger.definition.moogs.count).to be 0
+        end
+      end
+
       it "should finish at the original branch" do
         create_git_repo(repo_name)
         do_in_repo(repo_name) do
@@ -142,30 +159,6 @@ RSpec.describe Mooger::CLI::Install do
           expect(original_branch).to eq("master")
           Mooger::CLI::Install.new.run
           expect(Mooger::GitHelpers.current_branch).to eq(original_branch)
-        end
-      end
-
-      it "should cleanup temp branches" do
-        create_git_repo(repo_name)
-        do_in_repo(repo_name) do
-          create_moogerfile  
-          branch_count = git("branch | wc -l").strip.to_i
-          expect(branch_count).to eq(1)
-          Mooger::CLI::Install.new.run
-          updated_branch_count = git("branch | wc -l").strip.to_i
-          expect(branch_count).to eq(updated_branch_count)
-        end
-      end
-
-      it "should produce no changes" do
-        create_git_repo(repo_name)
-        do_in_repo(repo_name) do
-          create_moogerfile  
-          original_rev = git("rev-parse HEAD")
-          Mooger::CLI::Install.new.run
-          final_rev = git("rev-parse HEAD")
-          expect(original_rev).to eq(final_rev)
-          expect(Mooger::GitHelpers.repo_has_changes?).to be false
         end
       end
     end

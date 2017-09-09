@@ -10,15 +10,26 @@ module Mooger
     end
 
     def run
-      ensure_moog_exists
-      GitHelpers.push_remote(GitHelpers.subtree_path(@moog.name), @moog.name, @moog.branch)
+      begin
+        ensure_clean
+        ensure_moog_exists
+        GitHelpers.push_remote(GitHelpers.subtree_path(@moog.name), @moog.name, @moog.branch)
+      rescue => e
+        puts e
+      end
     end
 
     private
 
+    def ensure_clean
+      if GitHelpers.repo_has_changes?
+        raise GitRepoHasChangesError, "Working tree has modifications. Cannot continue"
+      end
+    end
+
     def ensure_moog_exists
       if @moog.nil?
-        raise MoogNotFound, "Moog with name: #{@moog_name} not found. Unable to pull."
+        raise MoogNotFound, "Moog with name: #{@moog_name} not found. Unable to push."
       end
     end
   end

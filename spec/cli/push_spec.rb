@@ -18,16 +18,16 @@ RSpec.describe Mooger::CLI::Push do
 
   describe "#run" do
 
-    it "should raise MoogNotFound if moog is not specified in the lockfile" do
-      create_git_repo(repo_name)
-      do_in_repo(repo_name) do
-        create_moogerfile
-        git("add .")
-        git("commit -m 'cleanup'")
-        Mooger::CLI::Install.new.run
-        expect{Mooger::CLI::Push.new({}, "absent_moog").run}.to raise_error(Mooger::MoogNotFound)
-      end
-    end
+    #it "should raise MoogNotFound if moog is not specified in the lockfile" do
+      #create_git_repo(repo_name)
+      #do_in_repo(repo_name) do
+        #create_moogerfile
+        #git("add .")
+        #git("commit -m 'cleanup'")
+        #Mooger::CLI::Install.new.run
+        #expect{Mooger::CLI::Push.new({}, "absent_moog").run}.to raise_error(Mooger::MoogNotFound)
+      #end
+    #end
 
     it "should invoke push_remote on GitHelpers" do
       create_git_repo(repo_name)

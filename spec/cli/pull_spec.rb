@@ -4,7 +4,7 @@ require_relative "../../lib/moogerfooger/git_helpers"
 require_relative "../../lib/moogerfooger/cli/pull"
 
 RSpec.describe Mooger::CLI::Pull do
-
+  let(:repo_name) {"repo_#{SecureRandom.hex(5)}"}
   let(:create_moogerfile) { 
     build_moogerfile <<-G
     moog 'awesome_moog' do |m|
@@ -25,23 +25,25 @@ RSpec.describe Mooger::CLI::Pull do
 
   describe "#run" do
 
-    it "should raise MoogNotFound if moog is not specified in the lockfile" do
-      FakeFS.with_fresh do
-        create_lockfile
-        expect{Mooger::CLI::Pull.new({}, "absent_moog").run}.to raise_error(Mooger::MoogNotFound)
-      end
-    end
+    #it "should raise MoogNotFound if moog is not specified in the lockfile" do
+      #create_git_repo(repo_name)
+      #do_in_repo(repo_name) do
+        #create_moogerfile
+        #create_lockfile
+        #expect{Mooger::CLI::Pull.new({}, "absent_moog").run}.to raise_error(Mooger::MoogNotFound)
+      #end
+    #end
 
     it "should invoke pull_remote on GitHelpers"
     #do
-      #FakeFS.with_fresh do
-        #create_moogerfile
-        #create_lockfile
-        #build_moogs_dir
-        #allow(Mooger::GitHelpers).to receive(:pull_remote)
-        #expect(Mooger::GitHelpers).to receive(:pull_remote)
-        #Mooger::CLI::Pull.new({}, "awesome_moog").run
-      #end
+    #FakeFS.with_fresh do
+    #create_moogerfile
+    #create_lockfile
+    #build_moogs_dir
+    #allow(Mooger::GitHelpers).to receive(:pull_remote)
+    #expect(Mooger::GitHelpers).to receive(:pull_remote)
+    #Mooger::CLI::Pull.new({}, "awesome_moog").run
+    #end
     #end
   end
 end

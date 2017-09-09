@@ -29,20 +29,13 @@ RSpec.describe Mooger::Installer::GitSubtree do
 
       let(:moogs) {[]}
 
-      it "should raise DefinitionHasNoMoogsError error" do
+      it "should invoke generate method" do
         FakeFS.with_fresh do
           build_moogerfile
+          build_moogs_dir
           allow(subtree_installer).to receive(:generate)
-          expect {subtree_installer.run}.to raise_error(Mooger::DefinitionHasNoMoogsError)
-        end
-      end
-
-      it "should not invoke generate method" do
-        FakeFS.with_fresh do
-          build_moogerfile
-          allow(subtree_installer).to receive(:generate)
-          expect(subtree_installer).to_not receive(:generate)
-          expect {subtree_installer.run}.to raise_error(Mooger::DefinitionHasNoMoogsError)
+          expect(subtree_installer).to receive(:generate)
+          subtree_installer.run
         end
       end
     end
